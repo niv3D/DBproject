@@ -19,7 +19,7 @@ public class ProductManager {
 	 * inserts a new product in the database.
 	 * 
 	 * @param product an object of <code>models.Product</code> which contains
-	 *                product data without id 
+	 *                product data without id
 	 * @return generated product id or 0 if unsuccessful
 	 */
 	public static int insert(Product product) {
@@ -149,7 +149,20 @@ public class ProductManager {
 	 * @return rowAffected, either 1 if deletion was successful or 0
 	 */
 	public static void delete(int id) {
-		
+
+		String sqlString = "DELETE FROM products WHERE id = ?";
+		int rowAffected = 0;
+
+		try (	
+				Connection connection = DBconnector.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sqlString)) {
+			
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void search() {
