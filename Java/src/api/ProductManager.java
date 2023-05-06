@@ -64,8 +64,7 @@ public class ProductManager {
 			}
 
 		} catch (SQLException e) {
-			// Implement user defined Exception later to re-throw
-			// catch SQLIntegrityConstraint.. exception for duplicate product name
+
 			e.printStackTrace();
 
 		} finally {
@@ -90,9 +89,9 @@ public class ProductManager {
 	 * @return rowAffected, either 1 if update was successful or 0
 	 */
 	public static int update(Product product) {
-		
+
 		int rowAffected = 0;
-		String sqlString = "UPDATE products SET";
+		String sqlString = "UPDATE products SET ";
 
 		if (product.name != null) {
 			sqlString += "name = ?, ";
@@ -103,17 +102,54 @@ public class ProductManager {
 		if (product.price != null) {
 			sqlString += "price = ?, ";
 		}
-		if(product.description != null) {
-			sqlString += "description = ?, ";
+		if (product.description != null) {
+			sqlString += "description = ? ";
 		}
-		
-		
-		
-		return 0;
+
+		sqlString += "WHERE id = ?";
+
+		try (Connection connection = DBconnector.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sqlString);) {
+
+			int i = 0;
+
+			if (product.name != null) {
+				statement.setString(++i, product.name);
+			}
+			if (product.categoryId != null) {
+				statement.setInt(++i, product.categoryId);
+			}
+			if (product.price != null) {
+				statement.setFloat(++i, product.price);
+			}
+			if (product.description != null) {
+				statement.setString(++i, product.description);
+			}
+
+			// if all field are null return 0
+			if (i == 0) {
+				return 0;
+			}
+
+			statement.setInt(++i, product.id);
+
+			rowAffected = statement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return rowAffected;
 	}
 
-	public static void delete() {
-
+	/**
+	 * deletes a product from the database.
+	 * 
+	 * @param id product id
+	 * @return rowAffected, either 1 if deletion was successful or 0
+	 */
+	public static void delete(int id) {
+		
 	}
 
 	public static void search() {
