@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import config.DBconnector;
 import models.Product;
@@ -148,25 +150,88 @@ public class ProductManager {
 	 * @param id product id
 	 * @return rowAffected, either 1 if deletion was successful or 0
 	 */
-	public static void delete(int id) {
+	public static int delete(int id) {
 
 		String sqlString = "DELETE FROM products WHERE id = ?";
 		int rowAffected = 0;
 
-		try (	
-				Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString)) {
-			
-			
-			
+
+			statement.setInt(1, id);
+			rowAffected = statement.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-	}
-
-	public static void search() {
+		return rowAffected;
 
 	}
 
+	/**
+	 * search for a product with id in database.
+	 * 
+	 * @param id product id
+	 * @return a <code>models.Product<code> object or null if no product is found
+	 */
+	public Product search(int id) {
+
+		if (id == 0) {
+			return null;
+		}
+
+		Product product = null;
+		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE id = " + id;
+
+		try (Connection connection = DBconnector.getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sqlString);
+
+		) {
+
+			if (resultSet.next()) {
+				product = new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
+						resultSet.getFloat(3), resultSet.getString(4));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return product;
+	}
+
+	/**
+	 * search for products with name in database.
+	 * 
+	 * @param name product name
+	 * @return a <code>List</code> of <code>models.Product</code>
+	 */
+	public List<Product> search(String name) {
+
+		List<Product> products = new ArrayList<>();
+
+		if (" ".equals(name)) {
+			return products;
+		}
+
+		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE name LIKE '%" + name
+				+ "%'";
+
+		try (Connection connection = DBconnector.getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sqlString);) {
+
+			while (resultSet.next()) {
+				products.add(new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
+						resultSet.getFloat(3), resultSet.getString(4)));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return products;
+	}
 }

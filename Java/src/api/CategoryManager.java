@@ -17,17 +17,16 @@ public class CategoryManager {
 	/**
 	 * inserts a new category in the database.
 	 * 
+	 * @param name of the category
 	 * @return generated category id or 0 if unsuccessful
 	 */
-
 	public static int insert(String name) {
 
-		if ("".equals(name)) {
+		if (" ".equals(name)) {
 			return 0;
 		}
 		if (name == null) {
 			return 0;
-
 		}
 
 		int id = 0;
@@ -67,21 +66,27 @@ public class CategoryManager {
 		return id;
 	}
 
+	/**
+	 * updates a category in the database.
+	 * 
+	 * @param id   of the category
+	 * @param name for updating
+	 * @return either 1 if successful or 0 if unsuccessful
+	 */
 	public static int update(int id, String name) {
 
 		int rowAffected = 0;
 
-		if ("".equals(name) || name == null || id == 0) {
+		if (name == null || " ".equals(name) || id == 0) {
 			return 0;
 		}
 
-		String sqlString = "UPDATE categories SET name = ? WHERE id=?";
+		String sqlString = "UPDATE categories SET name = ? WHERE id = ?";
 
 		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
 			statement.setString(1, name);
 			statement.setInt(2, id);
-			
 
 			rowAffected = statement.executeUpdate();
 
@@ -94,10 +99,12 @@ public class CategoryManager {
 
 	}
 
-	public static void main(String[] args) {
-		System.out.println(CategoryManager.update(2,"bike"));
+	public static int delete() {
+		int rowAffected = 0;
+
+		// TO-DO
+
+		return rowAffected;
 	}
-	
-	public static int delete()
 
 }

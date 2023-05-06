@@ -21,6 +21,10 @@ CREATE TABLE inventoryrecords (
 
 DESCRIBE products;
 
-SELECT * FROM products;
+SELECT id,name FROM products WHERE id = 7;
 
 INSERT INTO products (name,price,description) VALUES ('dummy',999.99,'hi very good product');
+
+DELETE FROM products WHERE id > 1;
+
+ALTER TABLE categories MODIFY 
