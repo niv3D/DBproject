@@ -16,7 +16,7 @@ public class ProductManager {
 	}
 
 	/**
-	 * inserts a new row in products table
+	 * inserts a new product in the database.
 	 * 
 	 * @param product an object of <code>models.Product</code> which contains
 	 *                product data
@@ -53,7 +53,6 @@ public class ProductManager {
 			} else {
 				statement.setString(4, product.description);
 			}
-
 			int rowAffected = statement.executeUpdate();
 
 			if (rowAffected == 1) {
@@ -66,6 +65,7 @@ public class ProductManager {
 
 		} catch (SQLException e) {
 			// Implement user defined Exception later to re-throw
+			// catch SQLIntegrityConstraint.. exception for duplicate product name
 			e.printStackTrace();
 
 		} finally {
@@ -81,8 +81,35 @@ public class ProductManager {
 		return id;
 	}
 
-	public static void update() {
+	/**
+	 * updates an existing product's data from the database.
+	 * 
+	 * @param product an object of <code>models.Product</code> with id of the
+	 *                updating product and fields set to the updated values, fields
+	 *                set to null wont be updated
+	 * @return rowAffected, either 1 if update was successful or 0
+	 */
+	public static int update(Product product) {
+		
+		int rowAffected = 0;
+		String sqlString = "UPDATE products SET";
 
+		if (product.name != null) {
+			sqlString += "name = ?, ";
+		}
+		if (product.categoryId != null) {
+			sqlString += "category_id = ?, ";
+		}
+		if (product.price != null) {
+			sqlString += "price = ?, ";
+		}
+		if(product.description != null) {
+			sqlString += "description = ?, ";
+		}
+		
+		
+		
+		return 0;
 	}
 
 	public static void delete() {
@@ -92,10 +119,5 @@ public class ProductManager {
 	public static void search() {
 
 	}
-	
-	public static void main(String[] args) {
-		Product product = new Product("Bike", null, 12222.22f, null);
-		
-		System.out.println(ProductManager.insert(product)); 
-	}
+
 }
