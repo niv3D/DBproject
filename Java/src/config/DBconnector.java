@@ -11,7 +11,7 @@ public class DBconnector {
 
 	private static String url = "jdbc:mysql://localhost:3306/InventoryDB";
 	private static String user = "root";
-	private static String password = "root@mysql";
+	private static String password = "";
 
 	public static Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(url, user, password);

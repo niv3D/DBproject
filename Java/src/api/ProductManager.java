@@ -19,7 +19,7 @@ public class ProductManager {
 	 * inserts a new product in the database.
 	 * 
 	 * @param product an object of <code>models.Product</code> which contains
-	 *                product data
+	 *                product data without id 
 	 * @return generated product id or 0 if unsuccessful
 	 */
 	public static int insert(Product product) {
