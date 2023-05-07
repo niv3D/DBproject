@@ -2,10 +2,10 @@ package models;
 
 import java.sql.Date;
 
-public class InventoryRecords {
+public class InventoryRecord {
 	
 	 
-	public InventoryRecords(int id,Integer productId,Integer quantity, Date date,String notes) {
+	public InventoryRecord(int id,Integer productId,Integer quantity, Date date,String notes) {
 		this.id = id;
 		this.productId =productId;
 		this.quantity= quantity;
@@ -13,7 +13,7 @@ public class InventoryRecords {
 		this.notes= notes;
 	}
 	
-	public InventoryRecords(Integer productId,Integer quantity,String notes) {
+	public InventoryRecord(Integer productId,Integer quantity,String notes) {
 		this.id = null;
 		this.productId =productId;
 		this.quantity= quantity;

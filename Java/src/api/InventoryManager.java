@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 
 import config.DBconnector;
-import models.InventoryRecords;
+import models.InventoryRecord;
 
 public class InventoryManager {
 
@@ -21,7 +21,7 @@ public class InventoryManager {
 	 * @param inventory <code>models.inventoryRecords</code> object
 	 * @return id of the record
 	 */
-	public static int updateStock(InventoryRecords inventory) {
+	public static int updateStock(InventoryRecord inventory) {
 
 		int id = 0;
 		ResultSet resultSet = null;
@@ -68,5 +68,7 @@ public class InventoryManager {
 
 		return id;
 	}
+	
+	
 
 }
