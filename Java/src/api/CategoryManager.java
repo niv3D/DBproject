@@ -92,7 +92,7 @@ public class CategoryManager {
 
 			rowAffected = statement.executeUpdate();
 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 
 		}
@@ -149,7 +149,7 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -181,7 +181,7 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
