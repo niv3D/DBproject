@@ -11,14 +11,14 @@ public class Product {
 	}
 
 	public Product(String name, Integer categoryId, Float price, String description) {
-		this.id = 0;
+		this.id = null;
 		this.name = name;
 		this.categoryId = categoryId;
 		this.price = price;
 		this.description = description;
 	}
 
-	public final int id;
+	public final Integer id;
 	public final String name;
 	public final Integer categoryId;
 	public final Float price;
