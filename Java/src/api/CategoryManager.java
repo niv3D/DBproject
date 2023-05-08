@@ -1,12 +1,16 @@
 package api;
 
+import java.awt.event.ContainerListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import config.DBconnector;
 
@@ -22,16 +26,14 @@ public class CategoryManager {
 	 * @parameter name of the category
 	 * @return generated category id or 0 if unsuccessful
 	 */
-	public static int insert(String name) {
+	public static int insert(String name) throws  InvalidInputException{
 
-		if (" ".equals(name)) {
-			return 0;
+		if ("".equals(name) || "null".equalsIgnoreCase(name)) {
+			throw new InvalidInputException();
+			
 		}
-		if (name == null) {
-			return 0;
-		}
-
 		int id = 0;
+
 		ResultSet resultSet = null;
 		String sqlString = "INSERT INTO categories (name) VALUES (?)";
 
@@ -50,17 +52,18 @@ public class CategoryManager {
 				}
 			}
 
-		} catch (SQLException e) {
-			// Implement user defined Exception later to re-throw
-			// catch SQLIntegrityConstraint.. exception for duplicate product name
-			e.printStackTrace();
+		} catch (SQLIntegrityConstraintViolationException e) {
+			System.out.println("Duplicate entries are not allowed");
+		}catch(Exception e) {
+			System.out.println("Something went Wrong");
+		}
 
-		} finally {
+		 finally {
 			if (resultSet != null) {
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					System.out.println("Something went Wrong");
 				}
 			}
 		}
@@ -68,19 +71,30 @@ public class CategoryManager {
 		return id;
 	}
 
+	public static void main(String[] args) throws InvalidInputException {
+		System.out.println("jh");
+		Scanner scanner = new Scanner(System.in);
+		String string = scanner.nextLine();
+		
+			CategoryManager.insert(string);
+			
+	}	
+
 	/**
 	 * updates a category in the database.
 	 * 
 	 * @parameter id of the category
 	 * @parameter name for updating
 	 * @return either 1 if successful or 0 if unsuccessful
+	 * @throws InvalidInputException 
 	 */
-	public static int update(int id, String name) {
+	public static int update(int id, String name) throws InvalidInputException {
 
 		int rowAffected = 0;
 
-		if (name == null || " ".equals(name) || id == 0) {
-			return 0;
+		if (name == "null" || " ".equals(name) || id == 0) {
+			throw new InvalidInputException();
+
 		}
 
 		String sqlString = "UPDATE categories SET name = ? WHERE id = ?";
@@ -92,9 +106,14 @@ public class CategoryManager {
 
 			rowAffected = statement.executeUpdate();
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLDataException e) {
+			System.out.println("Enter an integer value as id");
 
+		}catch (SQLIntegrityConstraintViolationException e) {
+			System.out.println("Duplicate entries are not allowed");
+		
+		}catch (Exception e) {
+			System.out.println("Something went wrong");
 		}
 
 		return rowAffected;
@@ -120,8 +139,13 @@ public class CategoryManager {
 			statement.setInt(1, id);
 			rowAffected = statement.executeUpdate();
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		}catch (SQLDataException e) {
+			System.out.println("Enter an integer value as id");
+
+		}
+		
+		catch (Exception e) {
+			System.out.println("Something went wrong");
 		}
 
 		return rowAffected;
@@ -149,8 +173,11 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLDataException e) {
+			System.out.println("Enter an integer value as id");
+
+		}catch (Exception e) {
+			System.out.println("Something went wrong");
 		}
 
 		return categories;
@@ -181,8 +208,8 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Something went wrong");
 		}
 
 		return categories;
