@@ -19,12 +19,18 @@ CREATE TABLE inventoryrecords (
 	notes TEXT
 );
 
+DESCRIBE inventoryrecords ;
 DESCRIBE products;
 
-SELECT id,name FROM products WHERE id = 7;
+SELECT * FROM categories;
 
-INSERT INTO products (name,price,description) VALUES ('dummy',999.99,'hi very good product');
+SELECT * FROM products;
+
 
 DELETE FROM products WHERE id > 1;
 
-ALTER TABLE categories MODIFY 
+
+
+SELECT id,name,category_id,price,description FROM products WHERE name LIKE '%d%';
+
+ALTER TABLE inventoryrecords MODIFY quantity INT NOT NULL;

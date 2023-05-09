@@ -1,6 +1,5 @@
 package api;
 
-import java.awt.event.ContainerListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +9,6 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import config.DBconnector;
 
@@ -26,11 +24,11 @@ public class CategoryManager {
 	 * @parameter name of the category
 	 * @return generated category id or 0 if unsuccessful
 	 */
-	public static int insert(String name) throws  InvalidInputException{
+	public static int insert(String name) throws InvalidInputException {
 
 		if ("".equals(name) || "null".equalsIgnoreCase(name)) {
 			throw new InvalidInputException();
-			
+
 		}
 		int id = 0;
 
@@ -54,11 +52,11 @@ public class CategoryManager {
 
 		} catch (SQLIntegrityConstraintViolationException e) {
 			System.out.println("Duplicate entries are not allowed");
-		}catch(Exception e) {
+		} catch (Exception e) {
 			System.out.println("Something went Wrong");
 		}
 
-		 finally {
+		finally {
 			if (resultSet != null) {
 				try {
 					resultSet.close();
@@ -71,22 +69,13 @@ public class CategoryManager {
 		return id;
 	}
 
-	public static void main(String[] args) throws InvalidInputException {
-		System.out.println("jh");
-		Scanner scanner = new Scanner(System.in);
-		String string = scanner.nextLine();
-		
-			CategoryManager.insert(string);
-			
-	}	
-
 	/**
 	 * updates a category in the database.
 	 * 
 	 * @parameter id of the category
 	 * @parameter name for updating
 	 * @return either 1 if successful or 0 if unsuccessful
-	 * @throws InvalidInputException 
+	 * @throws InvalidInputException
 	 */
 	public static int update(int id, String name) throws InvalidInputException {
 
@@ -109,10 +98,10 @@ public class CategoryManager {
 		} catch (SQLDataException e) {
 			System.out.println("Enter an integer value as id");
 
-		}catch (SQLIntegrityConstraintViolationException e) {
+		} catch (SQLIntegrityConstraintViolationException e) {
 			System.out.println("Duplicate entries are not allowed");
-		
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			System.out.println("Something went wrong");
 		}
 
@@ -139,11 +128,11 @@ public class CategoryManager {
 			statement.setInt(1, id);
 			rowAffected = statement.executeUpdate();
 
-		}catch (SQLDataException e) {
+		} catch (SQLDataException e) {
 			System.out.println("Enter an integer value as id");
 
 		}
-		
+
 		catch (Exception e) {
 			System.out.println("Something went wrong");
 		}
@@ -176,7 +165,7 @@ public class CategoryManager {
 		} catch (SQLDataException e) {
 			System.out.println("Enter an integer value as id");
 
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Something went wrong");
 		}
 

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ public class ProductManager {
 	 * @param product an object of <code>models.Product</code> which contains
 	 *                product data without id
 	 * @return generated product id or 0 if unsuccessful
+	 * @throws SQLIntegrityConstraintViolationException
 	 */
-	public static int insert(Product product) {
+	public static int insert(Product product) throws SQLIntegrityConstraintViolationException {
 
 		int id = 0;
 		ResultSet resultSet = null;
@@ -66,6 +68,10 @@ public class ProductManager {
 			}
 
 		} catch (SQLException e) {
+
+			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				throw new SQLIntegrityConstraintViolationException("product with same name exists !");
+			}
 
 			e.printStackTrace();
 
