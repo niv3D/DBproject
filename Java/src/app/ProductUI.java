@@ -1,6 +1,7 @@
 package app;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -88,14 +89,14 @@ public class ProductUI {
 	}
 
 	private static void searchString(String noid) {
-		List<Product> products = null;
+		List<Product> products = new ArrayList<>();
 		try {
 			products = ProductManager.search(noid);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 
-		if (products != null) {
+		if (!products.isEmpty()) {
 			for (Product p : products) {
 				System.out.format(" %4d | %-15s | %4d | %4f | %30s |%n", p.id, p.name, p.categoryId, p.price,
 						p.description);

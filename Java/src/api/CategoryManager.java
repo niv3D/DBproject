@@ -139,9 +139,9 @@ public class CategoryManager {
 	 * @throws SQLException
 	 */
 
-	public static List<String> search(int id) throws SQLException {
+	public static String search(int id) throws SQLException {
 
-		List<String> categories = new ArrayList<>();
+		String category = null;
 
 		String sqlString = "SELECT id,name FROM categories WHERE id=" + id;
 
@@ -150,7 +150,7 @@ public class CategoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
+				category = Integer.toString(resultSet.getInt(1)) + " | " + resultSet.getString(2);
 			}
 
 		}
@@ -159,7 +159,7 @@ public class CategoryManager {
 			throw new SQLException(e.getMessage());
 		}
 
-		return categories;
+		return category;
 
 	}
 
@@ -185,7 +185,7 @@ public class CategoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
+				categories.add(Integer.toString(resultSet.getInt(1)) + " | " + resultSet.getString(2));
 			}
 
 		} catch (SQLException e) {
