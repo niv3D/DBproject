@@ -24,9 +24,9 @@ public class ProductManager {
 	 * @param product an object of <code>models.Product</code> which contains
 	 *                product data without id
 	 * @return generated product id or 0 if unsuccessful
-	 * @throws SQLIntegrityConstraintViolationException
+	 * @throws SQLException 
 	 */
-	public static int insert(Product product) throws SQLIntegrityConstraintViolationException {
+	public static int insert(Product product) throws SQLException {
 
 		int id = 0;
 		ResultSet resultSet = null;
@@ -73,7 +73,7 @@ public class ProductManager {
 				throw new SQLIntegrityConstraintViolationException("product with same name exists !");
 			}
 
-			e.printStackTrace();
+			throw e;
 
 		} finally {
 			if (resultSet != null) {

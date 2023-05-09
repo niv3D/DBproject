@@ -1,6 +1,6 @@
 package app;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import api.ProductManager;
@@ -50,7 +50,7 @@ public class ProductUI {
 
 		try {
 			id = ProductManager.insert(product);
-		} catch (SQLIntegrityConstraintViolationException e) {
+		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 

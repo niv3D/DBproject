@@ -3,7 +3,6 @@ package api;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
@@ -23,13 +22,10 @@ public class CategoryManager {
 	 * 
 	 * @parameter name of the category
 	 * @return generated category id or 0 if unsuccessful
+	 * @throws SQLIntegrityConstraintViolationException
 	 */
-	public static int insert(String name) throws InvalidInputException {
+	public static int insert(String name) throws SQLException {
 
-		if ("".equals(name) || "null".equalsIgnoreCase(name)) {
-			throw new InvalidInputException();
-
-		}
 		int id = 0;
 
 		ResultSet resultSet = null;
@@ -50,10 +46,13 @@ public class CategoryManager {
 				}
 			}
 
-		} catch (SQLIntegrityConstraintViolationException e) {
-			System.out.println("Duplicate entries are not allowed");
-		} catch (Exception e) {
-			System.out.println("Something went Wrong");
+		} catch (SQLException e) {
+
+			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				throw new SQLIntegrityConstraintViolationException("same category name exists !");
+			}
+
+			throw e;
 		}
 
 		finally {
@@ -61,7 +60,7 @@ public class CategoryManager {
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					System.out.println("Something went Wrong");
+					e.printStackTrace();
 				}
 			}
 		}
@@ -77,14 +76,9 @@ public class CategoryManager {
 	 * @return either 1 if successful or 0 if unsuccessful
 	 * @throws InvalidInputException
 	 */
-	public static int update(int id, String name) throws InvalidInputException {
+	public static int update(int id, String name) throws SQLException {
 
 		int rowAffected = 0;
-
-		if (name == "null" || " ".equals(name) || id == 0) {
-			throw new InvalidInputException();
-
-		}
 
 		String sqlString = "UPDATE categories SET name = ? WHERE id = ?";
 
@@ -95,14 +89,14 @@ public class CategoryManager {
 
 			rowAffected = statement.executeUpdate();
 
-		} catch (SQLDataException e) {
-			System.out.println("Enter an integer value as id");
+		} catch (SQLException e) {
 
-		} catch (SQLIntegrityConstraintViolationException e) {
-			System.out.println("Duplicate entries are not allowed");
+			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				throw new SQLIntegrityConstraintViolationException("same category name exists !");
+			}
 
-		} catch (Exception e) {
-			System.out.println("Something went wrong");
+			throw e;
+
 		}
 
 		return rowAffected;
@@ -115,9 +109,10 @@ public class CategoryManager {
 	 * @parameter id of the category
 	 *
 	 * @return either 1 if successful or 0 if unsuccessful
+	 * @throws SQLException
 	 */
 
-	public static int delete(int id) {
+	public static int delete(int id) throws SQLException {
 
 		int rowAffected = 0;
 		String sqlString = "DELETE FROM Categories WHERE id= ?";
@@ -128,13 +123,8 @@ public class CategoryManager {
 			statement.setInt(1, id);
 			rowAffected = statement.executeUpdate();
 
-		} catch (SQLDataException e) {
-			System.out.println("Enter an integer value as id");
-
-		}
-
-		catch (Exception e) {
-			System.out.println("Something went wrong");
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
 		}
 
 		return rowAffected;
@@ -146,9 +136,10 @@ public class CategoryManager {
 	 * 
 	 * @parameter id
 	 * @return a <code>List</code> of <code>categories</code>
+	 * @throws SQLException
 	 */
 
-	public static List<String> search(int id) {
+	public static List<String> search(int id) throws SQLException {
 
 		List<String> categories = new ArrayList<>();
 
@@ -162,11 +153,10 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (SQLDataException e) {
-			System.out.println("Enter an integer value as id");
+		}
 
-		} catch (Exception e) {
-			System.out.println("Something went wrong");
+		catch (SQLException e) {
+			throw new SQLException(e.getMessage());
 		}
 
 		return categories;
@@ -178,8 +168,9 @@ public class CategoryManager {
 	 * 
 	 * @parameter category name
 	 * @return a <code>List</code> of <code>categories</code>
+	 * @throws SQLException
 	 */
-	public static List<String> search(String name) {
+	public static List<String> search(String name) throws SQLException {
 
 		List<String> categories = new ArrayList<>();
 
@@ -197,8 +188,8 @@ public class CategoryManager {
 				categories.add(Integer.toString(resultSet.getInt(1)) + " " + resultSet.getString(2));
 			}
 
-		} catch (Exception e) {
-			System.out.println("Something went wrong");
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
 		}
 
 		return categories;
