@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ public class InventoryManager {
 	 * 
 	 * @param inventory <code>models.inventoryRecords</code> object
 	 * @return id of the record or null if low stock
+	 * @throws SQLException 
 	 */
-	public static Integer updateStock(InventoryRecord inventory) {
+	public static Integer updateStock(InventoryRecord inventory) throws SQLException {
 		
 		int totalStock = getProductQuantity(inventory.productId);
 		
@@ -62,7 +64,11 @@ public class InventoryManager {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				throw new SQLIntegrityConstraintViolationException("Product Id not found !");
+			}
+
+			throw e;
 
 		} finally {
 			if (resultSet != null) {
@@ -82,9 +88,10 @@ public class InventoryManager {
 	 * 
 	 * @param productId
 	 * @return quantity of the product 
+	 * @throws SQLException 
 	 */
 
-	public static int getProductQuantity(int productId) {
+	public static int getProductQuantity(int productId) throws SQLException {
 		int sum = 0;
 
 		String sqlString = "SELECT SUM(quantity) FROM inventoryrecords WHERE product_id =" + productId;
@@ -98,8 +105,8 @@ public class InventoryManager {
 				sum=resultSet.getInt(1);
 			}
 			
-		} catch (SQLException e) {
-			e.printStackTrace();
+		}catch (SQLException e) {
+			throw new SQLException(e.getMessage());
 		}
 
 		return sum;
@@ -109,9 +116,10 @@ public class InventoryManager {
 	/**
 	 * To get all available stock of all products in the database.
 	 *  @return all the product id and available stock 
+	 * @throws SQLException 
 	 */
 	
-	public static List<String> productStock () {
+	public static List<String> productStock () throws SQLException {
 		List<String> stock=new ArrayList<>();
 		String sqlString="SELECT p.id, name, SUM(i.quantity) FROM products p INNER JOIN inventoryrecords i ON p.id = i.product_id GROUP BY p.id ORDER BY p.id;";
 		try (Connection connection = DBconnector.getConnection();
@@ -124,7 +132,8 @@ public class InventoryManager {
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e.getMessage());
+		
 		}
 		
 		return stock;
