@@ -95,8 +95,9 @@ public class ProductManager {
 	 *                updating product and fields set to the updated values, fields
 	 *                set to null wont be updated
 	 * @return rowAffected, either 1 if update was successful or 0
+	 * @throws SQLException 
 	 */
-	public static int update(Product product) {
+	public static int update(Product product) throws SQLException {
 
 		int rowAffected = 0;
 		String sqlString = "UPDATE products SET ";
@@ -144,7 +145,11 @@ public class ProductManager {
 			rowAffected = statement.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				throw new SQLIntegrityConstraintViolationException("product with same name exists !");
+			}
+
+			throw e;
 		}
 
 		return rowAffected;
@@ -180,8 +185,9 @@ public class ProductManager {
 	 * 
 	 * @param id product id
 	 * @return a <code>models.Product<code> object or null if no product is found
+	 * @throws SQLException 
 	 */
-	public Product search(int id) {
+	public static Product search(int id) throws SQLException {
 
 		if (id == 0) {
 			return null;
@@ -202,7 +208,7 @@ public class ProductManager {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e.getMessage());
 		}
 
 		return product;
@@ -213,8 +219,9 @@ public class ProductManager {
 	 * 
 	 * @param name product name
 	 * @return a <code>List</code> of <code>models.Product</code>
+	 * @throws SQLException 
 	 */
-	public List<Product> search(String name) {
+	public static List<Product> search(String name) throws SQLException {
 
 		List<Product> products = new ArrayList<>();
 
@@ -234,8 +241,8 @@ public class ProductManager {
 						resultSet.getFloat(3), resultSet.getString(4)));
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
 		}
 
 		return products;

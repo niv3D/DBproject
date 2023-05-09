@@ -2,10 +2,14 @@ package app;
 
 import java.util.Scanner;
 
+
 public class App {
+	
+	static final String NO_ARG = "no argument !";
+	static final String INV_ARG = "invalid argument !";
 
 	public static void main(String[] args) {
-
+		
 		String mainMenuString = "%n------------ commands ------------%n%n";
 		mainMenuString += " insert -[p,c]%n";
 		mainMenuString += " update -[p,c]%n";
@@ -21,7 +25,7 @@ public class App {
 
 		do {
 
-			System.out.format(">");
+			System.out.print(">");
 			String[] inputStrings = input.nextLine().split(" -");
 			String command = inputStrings[0];
 
@@ -32,10 +36,26 @@ public class App {
 
 			case "insert":
 				if (inputStrings.length == 1) {
-					System.out.println("no argument !");
+					System.out.println(NO_ARG);
 					break;
 				}
 				insert(inputStrings[1], input);
+				break;
+				
+			case "update":
+				if (inputStrings.length == 1) {
+					System.out.println(NO_ARG);
+					break;
+				}
+				update(inputStrings[1],input);
+				break;
+				
+			case "search":
+				if (inputStrings.length == 1) {
+					System.out.println(NO_ARG);
+					break;
+				}
+				search(inputStrings[1],input);
 				break;
 
 			case "exit":
@@ -54,13 +74,34 @@ public class App {
 
 	}
 
+	private static void search(String arg,Scanner input) {
+		if ("p".equals(arg)) {
+			ProductUI.search(input);
+		} else if ("c".equals(arg)) {
+			CategoryUI.search(input);
+		} else {
+			System.out.println(INV_ARG);
+		}
+		
+	}
+
+	private static void update(String arg, Scanner input) {
+		if ("p".equals(arg)) {
+			ProductUI.update(input);
+		} else if ("c".equals(arg)) {
+			CategoryUI.update(input);
+		} else {
+			System.out.println(INV_ARG);
+		}
+	}
+
 	private static void insert(String arg, Scanner input) {
 		if ("p".equals(arg)) {
 			ProductUI.insert(input);
 		} else if ("c".equals(arg)) {
 			CategoryUI.insert(input);
 		} else {
-			System.out.println("invalid argument !");
+			System.out.println(INV_ARG);
 		}
 	}
 

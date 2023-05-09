@@ -14,8 +14,11 @@ public class CategoryUI {
 		System.out.println(" insert '/' to cancel operation");
 		System.out.print(" name : ");
 		String name = input.nextLine();
+		if (name.contains("/")) {
+			return;
+		}
 		
-		if (name.isEmpty()|| !name.matches("\\s")) {
+		if (name.isEmpty()|| name.matches("\\s*")) {
 			System.out.println(" invalid input !");
 			return;
 		}
@@ -34,5 +37,13 @@ public class CategoryUI {
 		else {
 			System.out.println(" error , please try again !");
 		}
+	}
+	
+	public static void update(Scanner input) {
+		// TODO document why this method is empty
+	}
+	
+	public static void search(Scanner input) {
+		// TODO document why this method is empty
 	}
 }
