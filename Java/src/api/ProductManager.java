@@ -204,7 +204,7 @@ public class ProductManager {
 
 			if (resultSet.next()) {
 				product = new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getFloat(3), resultSet.getString(4));
+						resultSet.getFloat(4), resultSet.getString(5));
 			}
 
 		} catch (SQLException e) {
@@ -238,7 +238,7 @@ public class ProductManager {
 
 			while (resultSet.next()) {
 				products.add(new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getFloat(3), resultSet.getString(4)));
+						resultSet.getFloat(4), resultSet.getString(5)));
 			}
 
 		} catch (SQLException e) {

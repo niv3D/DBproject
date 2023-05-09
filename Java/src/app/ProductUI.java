@@ -97,7 +97,7 @@ public class ProductUI {
 
 		if (products != null) {
 			for (Product p : products) {
-				System.out.format(" %4d | %-20s | %4d | %4f | %30s |%n", p.id, p.name, p.categoryId, p.price,
+				System.out.format(" %4d | %-15s | %4d | %4f | %30s |%n", p.id, p.name, p.categoryId, p.price,
 						p.description);
 			}
 		} else {
@@ -116,7 +116,7 @@ public class ProductUI {
 		}
 
 		if (p != null) {
-			System.out.format(" %4d | %-20s | %4d | %4f | %30s |%n", p.id, p.name, p.categoryId, p.price,
+			System.out.format(" %4d | %-15s | %4d | %8.2f | %30s |%n", p.id, p.name, p.categoryId, p.price,
 					p.description);
 		} else {
 			System.out.println(" not found !");

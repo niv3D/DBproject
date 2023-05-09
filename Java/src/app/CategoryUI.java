@@ -17,7 +17,6 @@ public class CategoryUI {
 		if (name.contains("/")) {
 			return;
 		}
-		
 
 		if (name.isEmpty() || !name.matches("\\s*")) {
 			System.out.println(" invalid input !");
@@ -38,11 +37,11 @@ public class CategoryUI {
 			System.out.println(" error , please try again !");
 		}
 	}
-	
+
 	public static void update(Scanner input) {
 		// TODO document why this method is empty
 	}
-	
+
 	public static void search(Scanner input) {
 		// TODO document why this method is empty
 	}
