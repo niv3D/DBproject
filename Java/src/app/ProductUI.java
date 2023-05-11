@@ -150,6 +150,29 @@ public class ProductUI {
 		if (!search(input)) {
 			return;
 		}
+		int idInt;
+		String id = getString("id", input);
+		if (id.contains("/")||!verifyId(id)) {
+			return;
+		}
+		else {
+			idInt = Integer.parseInt(id);
+		}
+		
+		Product result=null;
+		try {
+			result = ProductManager.delete(idInt);
+		} catch (SQLException e) {
+			System.out.format(" %s%n", e.getLocalizedMessage());
+		}
+		
+		if (result != null) {
+			printProduct(result);
+			System.out.println(" deleted !");
+		} else {
+			System.out.println(" error , please try again !");
+		}
+		
 	}
 
 	private static String getString(String label, Scanner input) {
