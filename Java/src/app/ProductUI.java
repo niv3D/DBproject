@@ -67,7 +67,7 @@ public class ProductUI {
 
 		System.out.println(" insert '/' to cancel operation");
 
-		String noid = getString("name", input);
+		String noid = getString("name or id", input);
 		if (noid.contains("/") || !verifyString(noid)) {
 			return false;
 		}
