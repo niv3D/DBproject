@@ -23,17 +23,11 @@ public class InventoryManager {
 	 * 
 	 * @param inventory <code>models.inventoryRecords</code> object
 	 * @return id of the record or null if low stock
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public static Integer updateStock(InventoryRecord inventory) throws SQLException {
-		
-		int totalStock = getProductQuantity(inventory.productId);
-		
-		if((totalStock + inventory.quantity)<0) {
-			return null;
-		}
-		
-		int id = 0;
+	public static InventoryRecord updateStock(InventoryRecord inventory) throws SQLException {
+
+		InventoryRecord result = null;
 		ResultSet resultSet = null;
 
 		String sqlString = "INSERT INTO inventoryrecords (product_id,quantity,date,notes) VALUES (?,?,CURDATE(),?)";
@@ -43,14 +37,14 @@ public class InventoryManager {
 
 		) {
 
-			statement.setInt(1, inventory.productId);
+			statement.setInt(1, inventory.getProductId());
 
-			statement.setInt(2, inventory.quantity);
+			statement.setInt(2, inventory.getQuantity());
 
-			if (inventory.notes == null) {
+			if (inventory.getNotes() == null) {
 				statement.setNull(3, Types.VARCHAR);
 			} else {
-				statement.setString(3, inventory.notes);
+				statement.setString(3, inventory.getNotes());
 			}
 			int rowAffected = statement.executeUpdate();
 
@@ -58,7 +52,9 @@ public class InventoryManager {
 
 				resultSet = statement.getGeneratedKeys();
 				if (resultSet.next()) {
-					id = resultSet.getInt(1);
+					result = new InventoryRecord.InventoryRecordBuilder(inventory.getProductId(),
+							inventory.getQuantity()).id(resultSet.getInt(1)).date(inventory.getDate())
+							.notes(inventory.getNotes()).build();
 				}
 			}
 
@@ -80,64 +76,64 @@ public class InventoryManager {
 			}
 		}
 
-		return id;
+		return result;
 	}
-	
+
 	/**
 	 * To get quantity of individual product in the database.
 	 * 
 	 * @param productId
-	 * @return quantity of the product 
-	 * @throws SQLException 
+	 * @return quantity of the product
+	 * @throws SQLException
 	 */
 
-	public static int getProductQuantity(int productId) throws SQLException {
-		int sum = 0;
+	public static InventoryRecord getProductQuantity(int productId) throws SQLException {
+		InventoryRecord result = null;
 
-		String sqlString = "SELECT SUM(quantity) FROM inventoryrecords WHERE product_id =" + productId;
+		String sqlString = "SELECT SUM(quantity) AS TotalQuantity FROM inventoryrecords WHERE product_id =" + productId;
 
 		try (Connection connection = DBconnector.getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(sqlString);
-				) {
-			
-			if(resultSet.next()) {
-				sum=resultSet.getInt(1);
-			}
-			
-		}catch (SQLException e) {
-			throw new SQLException(e.getMessage());
-		}
+				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
-		return sum;
-
-	}
-	
-	/**
-	 * To get all available stock of all products in the database.
-	 *  @return all the product id and available stock 
-	 * @throws SQLException 
-	 */
-	
-	public static List<String> productStock () throws SQLException {
-		List<String> stock=new ArrayList<>();
-		String sqlString="SELECT p.id, name, SUM(i.quantity) FROM products p INNER JOIN inventoryrecords i ON p.id = i.product_id GROUP BY p.id ORDER BY p.id;";
-		try (Connection connection = DBconnector.getConnection();
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(sqlString);
-				) {
-			
-			while(resultSet.next()) {
-				stock.add(Integer.toString(resultSet.getInt(1))+" "+Integer.toString(resultSet.getInt(2)));
+			if (resultSet.next()) {
+				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),resultSet.getInt("TotalQuantity")).build();
 			}
-			
+
 		} catch (SQLException e) {
 			throw new SQLException(e.getMessage());
-		
 		}
-		
+
+		return result;
+
+	}
+
+	/**
+	 * To get all available stock of all products in the database.
+	 * 
+	 * @return all the product id and available stock
+	 * @throws SQLException
+	 */
+
+	public static List<InventoryRecord> productStock() throws SQLException {
+		List<InventoryRecord> stock = new ArrayList<>();
+		String sqlString = "SELECT p.id, name, SUM(i.quantity) AS TotalQuantity FROM products p INNER JOIN inventoryrecords i ON p.id = i.product_id GROUP BY p.id ORDER BY p.id;";
+		try (Connection connection = DBconnector.getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet resultSet = statement.executeQuery(sqlString);) {
+
+			while (resultSet.next()) {
+				stock.add(new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),
+						resultSet.getInt("TotalQuantity")).build());
+			}
+
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+
+		}
+
 		return stock;
-		
+
 	}
 
 }

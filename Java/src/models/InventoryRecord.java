@@ -3,27 +3,74 @@ package models;
 import java.sql.Date;
 
 public class InventoryRecord {
-	
-	 
-	public InventoryRecord(int id,Integer productId,Integer quantity, Date date,String notes) {
-		this.id = id;
-		this.productId =productId;
-		this.quantity= quantity;
-		this.date = date;
-		this.notes= notes;
+
+	private final int id;
+	private final int quantity;
+	private final int productId;
+	private final Date date;
+	private final String notes;
+
+	public InventoryRecord(InventoryRecordBuilder builder) {
+		this.id = builder.id;
+		this.productId = builder.productId;
+		this.quantity = builder.quantity;
+		this.date = builder.date;
+		this.notes = builder.notes;
 	}
-	
-	public InventoryRecord(Integer productId,Integer quantity,String notes) {
-		this.id = null;
-		this.productId =productId;
-		this.quantity= quantity;
-		this.date = null;
-		this.notes= notes;
+
+	public int getId() {
+		return id;
 	}
-	
-	public final Integer id;
-	public final Integer productId;
-	public final Integer quantity;
-	public final Date date;
-	public final String notes;
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public int getProductId() {
+		return productId;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public static class InventoryRecordBuilder {
+
+		private int id;
+		private final int quantity;
+		private final int productId; 
+		private  Date date;
+		private String notes;
+
+		public InventoryRecordBuilder(int productId, int quantity) {
+
+			this.productId = productId;
+			this.quantity = quantity;
+			
+
+		}
+		
+		public InventoryRecordBuilder id(int id) {
+			this.id = id;
+			return this;
+		}
+		
+		public InventoryRecordBuilder notes(String notes) {
+			this.notes=notes;
+			return this;
+		}
+		
+		public InventoryRecordBuilder date(Date date) {
+			this.date = date;
+			return this;
+		}
+		public InventoryRecord build() {
+			return new InventoryRecord(this);
+			
+		}
+	}
 }
