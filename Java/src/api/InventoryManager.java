@@ -88,7 +88,8 @@ public class InventoryManager {
 	public static InventoryRecord getProductQuantity(int productId) throws SQLException {
 		InventoryRecord result = null;
 
-		String sqlString = "SELECT product_id,SUM(quantity) AS totalQuantity FROM inventoryrecords WHERE product_id =" + productId;
+		String sqlString = "SELECT product_id,SUM(quantity) AS totalQuantity FROM inventoryrecords WHERE product_id ="
+				+ productId;
 
 		try (Connection connection = DBconnector.getConnection();
 				Statement statement = connection.createStatement();
@@ -108,7 +109,7 @@ public class InventoryManager {
 	}
 
 	public static InventoryRecord getRecord(int id) throws SQLException {
-		if(id==0) {
+		if (id == 0) {
 			return null;
 		}
 		InventoryRecord rec = null;
