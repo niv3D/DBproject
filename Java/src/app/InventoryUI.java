@@ -1,7 +1,7 @@
 package app;
 
-import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,12 +42,13 @@ public class InventoryUI {
 			return;
 		}
 
-		Date date = Date.valueOf(new java.util.Date().toString());
-
-		InventoryRecord record = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).date(date)
-				.build();
+		InventoryRecord record = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
 		InventoryRecord result = null;
 
+		if((quantityInt<0)&&(getQuantity(idInt)+quantityInt<0)) {
+			System.out.println(" low stock !");
+		}
+		
 		try {
 			result = InventoryManager.updateStock(record);
 		} catch (SQLException e) {
@@ -63,7 +64,41 @@ public class InventoryUI {
 
 	}
 	
+	public static void getStockStatus() {
+		
+		List<InventoryRecord> records = new ArrayList<>();
+		
+		try {
+			records = InventoryManager.productStock();
+		} catch (SQLException e) {
+			System.out.format(" %s%n", e.getLocalizedMessage());
+		}
+		
+		if (!records.isEmpty()) {
+			printRecord(records);
+		}else {
+			System.out.println(" all stocks empty !");
+		}
+		
+	}
+	
+	
 	private static int getQuantity(int id) {
+		
+		InventoryRecord rec = null;
+		try {
+			rec = InventoryManager.getProductQuantity(id);
+		} catch (SQLException e) {
+			System.out.format(" %s%n", e.getLocalizedMessage());
+		}
+		
+		if (rec!=null) {
+			printRecord(rec);
+			return rec.getQuantity();
+		}
+		else {
+			return 0;
+		}
 		
 	}
 

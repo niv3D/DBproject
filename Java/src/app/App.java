@@ -15,6 +15,7 @@ public class App {
 		mainMenuString += " update -[p,c]%n";
 		mainMenuString += " delete -[p,c]%n";
 		mainMenuString += " search -[p,c]%n";
+		mainMenuString += " status%n";
 		mainMenuString += " exit%n";
 		mainMenuString += "                  p - product%n";
 		mainMenuString += "                  c - category%n";
@@ -66,6 +67,10 @@ public class App {
 					break;
 				}
 				delete(inputStrings[1],input);
+				break;
+				
+			case "status":
+				InventoryUI.getStockStatus();
 				break;
 
 			case "exit":
