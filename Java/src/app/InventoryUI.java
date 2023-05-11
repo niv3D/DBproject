@@ -93,6 +93,7 @@ public class InventoryUI {
 
 		if ((quantityInt < 0) && (getQuantity(idInt) + quantityInt < 0)) {
 			System.out.println(" low stock !");
+			System.out.println(" stock not removed !");
 			return;
 		}
 
@@ -177,7 +178,7 @@ public class InventoryUI {
 	private static void printRecord(InventoryRecord result) {
 		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
 		System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", result.getId(), result.getProductId(),
-				result.getQuantity(), result.getDate().toString(), result.getNotes());
+				result.getQuantity(), result.getDate(), result.getNotes());
 
 		// id productID quantity date note
 	}
@@ -186,7 +187,7 @@ public class InventoryUI {
 		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
 		for (InventoryRecord p : results) {
 			System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", p.getId(), p.getProductId(), p.getQuantity(),
-					p.getDate().toString(), p.getNotes());
+					p.getDate(), p.getNotes());
 		}
 
 	}
