@@ -2,10 +2,12 @@ package app;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
 import api.CategoryManager;
+import models.Category;
 
 public class CategoryUI {
 	private CategoryUI() {
@@ -14,129 +16,83 @@ public class CategoryUI {
 	public static void insert(Scanner input) {
 
 		System.out.println(" insert '/' to cancel operation");
-		System.out.print(" name : ");
-		String name = input.nextLine();
-		if (name.contains("/")) {
+
+		String name = getString("name", input);
+		if (name.contains("/") || !verifyString(name)) {
 			return;
 		}
 
-		if (name.isEmpty() || name.matches("\\s*")) {
-			System.out.println(" invalid input !");
-			return;
-		}
-
-		int id = 0;
+		Category category = new Category.CategoryBuilder(name).build();
+		Category result = null;
 
 		try {
-			id = CategoryManager.insert(name);
+			result = CategoryManager.insert(category);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 
-		if (id != 0) {
-			System.out.format(" category added : id - %d ;%n", id);
+		if (result != null) {
+			printCategory(result);
+			System.out.println(" added !");
 		} else {
 			System.out.println(" error , please try again !");
 		}
+
 	}
 
 	public static void update(Scanner input) {
-		if(!search(input)) {
-			return;
-		}
-		
-		System.out.print(" id : ");
-		String id = input.nextLine();
-		if(id.contains("/")){
-			return;
-		}
-		
-		if (id.isEmpty() || !id.matches("\\d*")) {
-			System.out.println(" input format error !");
-			return;
-		}
-		
-		System.out.print(" name : ");
-		String name = input.nextLine();
-		if (name.contains("/")) {
-			return;
-		}
-		
-		if (name.isEmpty() || name.matches("\\s*")) {
-			System.out.println(" input format error !");
-			return;
-		}
-		
-		int rowAffected = 0;
-		try {
-			rowAffected = CategoryManager.update(Integer.parseInt(id), name);
-		} catch (SQLException e) {
-			System.out.format(" %s%n", e.getLocalizedMessage());
-		}
-		
-		if (rowAffected == 1) {
-			System.out.println(" category updated !");
-		} else {
-			System.out.println(" error , please try again !");
-		}
+
 	}
 
 	public static boolean search(Scanner input) {
-		System.out.println(" insert '/' to cancel operation");
-		System.out.print(" name or id : ");
-		String noid = input.nextLine();
-		if (noid.contains("/")) {
-			return false;
-		}
 
-		if (noid.isEmpty() || noid.matches("\\s*")) {
-			System.out.println(" input format error !");
-			return false;
-		}
-
-		if (noid.matches("\\d*")) {
-			 return searchInt(noid);
-		} else {
-			return searchString(noid);
-		}
 	}
 
 	private static boolean searchString(String noid) {
-		List<String> categories = new ArrayList<>();
-		try {
-			categories = CategoryManager.search(noid);
-		} catch (SQLException e) {
-			System.out.format(" %s%n", e.getLocalizedMessage());
-		}
 
-		if (!categories.isEmpty()) {
-			for (String c : categories) {
-				System.out.format(" %s%n", c);
-			}
-			return true;
-		} else {
-			System.out.println(" not found !");
-			return false;
-		}
 	}
 
 	private static boolean searchInt(String noid) {
-		int id = Integer.parseInt(noid);
-		String c = null;
-		
-		try {
-			c = CategoryManager.search(id);
-		} catch (SQLException e) {
-			System.out.format(" %s%n", e.getLocalizedMessage());
-		}
-		
-		if(c!=null) {
-			System.out.format(" %s%n", c);
-			return true;
-		}else {
-			System.out.println(" not found !");
-			return false;
-		}
 
+	}
+	
+	
+	private static void printCategory(Category result) {
+		System.out.format(" |%15s | %15s |%n%n", "id", "name");
+		System.out.format(" |%15d | %15s |%n", result.getId(), result.getName());
+	}
+
+	private static void printCategory(List<Category> results) {
+		System.out.format(" |%15s | %15s |%n%n", "id", "name");
+		for (Category c : results) {
+			System.out.format(" |%15d | %15s |%n", c.getId(), c.getName());
+		}
+	}
+
+	private static String getString(String label, Scanner input) {
+		System.out.format(" %s : ", label);
+		return input.nextLine();
+	}
+
+	private static boolean verifyString(String s) {
+
+		if (s.isEmpty() || s.matches("\\s*")) {
+			System.out.println(" field cant be empty !");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private static boolean verifyId(String s) {
+		if (s.isEmpty() || s.matches("\\s*")) {
+			System.out.println(" field cant be empty !");
+			return false;
+		} else if (!s.matches("\\d*")) {
+			System.out.println(" field must be a number !");
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

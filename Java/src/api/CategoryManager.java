@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import config.DBconnector;
+import models.Category;
 
 public class CategoryManager {
 
@@ -24,11 +25,11 @@ public class CategoryManager {
 	 * @return generated category id or 0 if unsuccessful
 	 * @throws SQLIntegrityConstraintViolationException
 	 */
-	public static int insert(String name) throws SQLException {
-
-		int id = 0;
+	public static Category insert(Category category) throws SQLException {
 
 		ResultSet resultSet = null;
+		Category result = null;
+
 		String sqlString = "INSERT INTO categories (name) VALUES (?)";
 
 		try (Connection connection = DBconnector.getConnection();
@@ -36,13 +37,13 @@ public class CategoryManager {
 
 		) {
 
-			statement.setString(1, name);
+			statement.setString(1, category.getName());
 			int rowAffected = statement.executeUpdate();
 
 			if (rowAffected == 1) {
 				resultSet = statement.getGeneratedKeys();
 				if (resultSet.next()) {
-					id = resultSet.getInt(1);
+					result = new Category.CategoryBuilder(category.getName()).id(resultSet.getInt(1)).build();
 				}
 			}
 
@@ -65,7 +66,7 @@ public class CategoryManager {
 			}
 		}
 
-		return id;
+		return result;
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class CategoryManager {
 	 * @return either 1 if successful or 0 if unsuccessful
 	 * @throws InvalidInputException
 	 */
-	public static int update(int id, String name) throws SQLException {
+	public static Category update(Category category) throws SQLException {
 
 		int rowAffected = 0;
 
@@ -84,8 +85,8 @@ public class CategoryManager {
 
 		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
-			statement.setString(1, name);
-			statement.setInt(2, id);
+			statement.setString(1, category.getName());
+			statement.setInt(2, category.getId());
 
 			rowAffected = statement.executeUpdate();
 
@@ -99,7 +100,11 @@ public class CategoryManager {
 
 		}
 
-		return rowAffected;
+		if (rowAffected == 1) {
+			return search(category.getId());
+		} else {
+			return null;
+		}
 
 	}
 
@@ -112,10 +117,11 @@ public class CategoryManager {
 	 * @throws SQLException
 	 */
 
-	public static int delete(int id) throws SQLException {
+	public static Category delete(int id) throws SQLException {
 
 		int rowAffected = 0;
 		String sqlString = "DELETE FROM Categories WHERE id= ?";
+		Category category = search(id);
 
 		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
@@ -127,8 +133,11 @@ public class CategoryManager {
 			throw new SQLException(e.getMessage());
 		}
 
-		return rowAffected;
-
+		if (rowAffected == 1) {
+			return category;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -139,9 +148,9 @@ public class CategoryManager {
 	 * @throws SQLException
 	 */
 
-	public static String search(int id) throws SQLException {
+	public static Category search(int id) throws SQLException {
 
-		String category = null;
+		Category category = null;
 
 		String sqlString = "SELECT id,name FROM categories WHERE id=" + id;
 
@@ -150,7 +159,7 @@ public class CategoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				category = Integer.toString(resultSet.getInt(1)) + " | " + resultSet.getString(2);
+				category = new Category.CategoryBuilder(resultSet.getString("name")).id(resultSet.getInt("id")).build();
 			}
 
 		}
@@ -170,13 +179,9 @@ public class CategoryManager {
 	 * @return a <code>List</code> of <code>categories</code>
 	 * @throws SQLException
 	 */
-	public static List<String> search(String name) throws SQLException {
+	public static List<Category> search(String name) throws SQLException {
 
-		List<String> categories = new ArrayList<>();
-
-		if (" ".equals(name)) {
-			return categories;
-		}
+		List<Category> categories = new ArrayList<>();
 
 		String sqlString = "SELECT id,name FROM categories WHERE name LIKE '%" + name + "%'";
 
@@ -185,7 +190,8 @@ public class CategoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				categories.add(Integer.toString(resultSet.getInt(1)) + " | " + resultSet.getString(2));
+				categories.add(
+						new Category.CategoryBuilder(resultSet.getString("name")).id(resultSet.getInt("id")).build());
 			}
 
 		} catch (SQLException e) {

@@ -215,18 +215,18 @@ public class ProductUI {
 	}
 
 	private static void printProduct(Product result) {
-		System.out.format(" %15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
 				"description");
-		System.out.format(" %15d | %15s | %15d | %15.2f | %30s |%n", result.getId(), result.getName(),
+		System.out.format(" |%15d | %15s | %15d | %15.2f | %30s |%n", result.getId(), result.getName(),
 				result.getCategoryId(), result.getPrice(), result.getDescription());
 
 	}
 
 	private static void printProduct(List<Product> results) {
-		System.out.format(" %15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
 				"description");
 		for (Product p : results) {
-			System.out.format(" %15d | %15s | %15d | %15.2f | %30s |%n", p.getId(), p.getName(), p.getCategoryId(),
+			System.out.format(" |%15d | %15s | %15d | %15.2f | %30s |%n", p.getId(), p.getName(), p.getCategoryId(),
 					p.getPrice(), p.getDescription());
 		}
 
