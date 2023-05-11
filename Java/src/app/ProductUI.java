@@ -114,7 +114,7 @@ public class ProductUI {
 
 		String price = getString("[optional] price", input);
 		if (price.isEmpty()) {
-			priceFloat = 0;
+			priceFloat = 0f;
 		} else if (price.contains("/") || !verifyFloat(price)) {
 			return;
 		} else {

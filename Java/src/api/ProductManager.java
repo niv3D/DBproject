@@ -101,7 +101,7 @@ public class ProductManager {
 		if (product.getCategoryId() != 0) {
 			sqlString += "category_id = ?, ";
 		}
-		if (product.getPrice() != 0) {
+		if (product.getPrice() != 0f) {
 			sqlString += "price = ?, ";
 		}
 		if (product.getDescription() != null) {

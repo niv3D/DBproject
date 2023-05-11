@@ -11,13 +11,15 @@ public class App {
 	public static void main(String[] args) {
 		
 		String mainMenuString = "%n------------ commands ------------%n%n";
-		mainMenuString += " insert -[p,c]%n";
+		mainMenuString += " insert -[p,c,s]%n";
 		mainMenuString += " update -[p,c]%n";
 		mainMenuString += " delete -[p,c]%n";
 		mainMenuString += " search -[p,c]%n";
 		mainMenuString += " exit%n";
 		mainMenuString += "                  p - product%n";
 		mainMenuString += "                  c - category%n";
+		mainMenuString += "                  s - stock%n";
+		
 
 		boolean exitStatus = false;
 		Scanner input = new Scanner(System.in);
@@ -119,7 +121,10 @@ public class App {
 			ProductUI.insert(input);
 		} else if ("c".equals(arg)) {
 			CategoryUI.insert(input);
-		} else {
+		} else if("s".equals(arg)){
+			InventoryUI.insert(input);
+		}
+		else {
 			System.out.println(INV_ARG);
 		}
 	}

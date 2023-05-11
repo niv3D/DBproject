@@ -97,7 +97,8 @@ public class InventoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			if (resultSet.next()) {
-				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),resultSet.getInt("TotalQuantity")).build();
+				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),
+						resultSet.getInt("TotalQuantity")).build();
 			}
 
 		} catch (SQLException e) {
