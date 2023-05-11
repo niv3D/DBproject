@@ -63,7 +63,8 @@ public class ProductManager {
 		} catch (SQLException e) {
 
 			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
-				throw new SQLIntegrityConstraintViolationException("product with same name exists !");
+				throw new SQLIntegrityConstraintViolationException(
+						"Product name already exists or category id not found");
 			}
 
 			throw e;
@@ -96,19 +97,26 @@ public class ProductManager {
 		String sqlString = "UPDATE products SET ";
 
 		if (product.getName() != null) {
-			sqlString += "name = ?, ";
+			sqlString += "name = ?,";
 		}
 		if (product.getCategoryId() != 0) {
-			sqlString += "category_id = ?, ";
+			sqlString += "category_id = ?,";
 		}
+
 		if (product.getPrice() != 0f) {
 			sqlString += "price = ?, ";
 		}
-		if (product.getDescription() != null) {
-			sqlString += "description = ? ";
-		}
+		if (product.getPrice() != 0) {
+			sqlString += "price = ?,";
 
-		sqlString += "WHERE id = ?";
+		}
+		if (product.getDescription() != null) {
+			sqlString += "description = ?,";
+		}
+		sqlString = sqlString.substring(0, sqlString.lastIndexOf(","));
+		sqlString += " WHERE id = ?";
+
+		System.out.println(sqlString);
 
 		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
@@ -139,7 +147,8 @@ public class ProductManager {
 
 		} catch (SQLException e) {
 			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
-				throw new SQLIntegrityConstraintViolationException("product with same name exists !");
+				throw new SQLIntegrityConstraintViolationException(
+						"Product name already exists or category id not found");
 			}
 
 			throw e;
@@ -150,6 +159,7 @@ public class ProductManager {
 		} else {
 			return null;
 		}
+
 	}
 
 	/**
