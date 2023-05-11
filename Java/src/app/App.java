@@ -2,25 +2,23 @@ package app;
 
 import java.util.Scanner;
 
-
 public class App {
-	
+
 	static final String NO_ARG = "no argument !";
 	static final String INV_ARG = "invalid argument !";
 
 	public static void main(String[] args) {
-		
+
 		String mainMenuString = "%n------------ commands ------------%n%n";
 		mainMenuString += " insert -[p,c,s]%n";
 		mainMenuString += " update -[p,c]%n";
-		mainMenuString += " delete -[p,c]%n";
+		mainMenuString += " delete -[p,c,s]%n";
 		mainMenuString += " search -[p,c]%n";
 		mainMenuString += " status%n";
 		mainMenuString += " exit%n";
 		mainMenuString += "                  p - product%n";
 		mainMenuString += "                  c - category%n";
 		mainMenuString += "                  s - stock%n";
-		
 
 		boolean exitStatus = false;
 		Scanner input = new Scanner(System.in);
@@ -44,31 +42,31 @@ public class App {
 				}
 				insert(inputStrings[1], input);
 				break;
-				
+
 			case "update":
 				if (inputStrings.length == 1) {
 					System.out.println(NO_ARG);
 					break;
 				}
-				update(inputStrings[1],input);
+				update(inputStrings[1], input);
 				break;
-				
+
 			case "search":
 				if (inputStrings.length == 1) {
 					System.out.println(NO_ARG);
 					break;
 				}
-				search(inputStrings[1],input);
+				search(inputStrings[1], input);
 				break;
-				
+
 			case "delete":
 				if (inputStrings.length == 1) {
 					System.out.println(NO_ARG);
 					break;
 				}
-				delete(inputStrings[1],input);
+				delete(inputStrings[1], input);
 				break;
-				
+
 			case "status":
 				InventoryUI.getStockStatus();
 				break;
@@ -94,13 +92,15 @@ public class App {
 			ProductUI.delete(input);
 		} else if ("c".equals(arg)) {
 			CategoryUI.delete(input);
+		} else if ("s".equals(arg)) {
+			InventoryUI.delete(input);
 		} else {
 			System.out.println(INV_ARG);
 		}
-		
+
 	}
 
-	private static void search(String arg,Scanner input) {
+	private static void search(String arg, Scanner input) {
 		if ("p".equals(arg)) {
 			ProductUI.search(input);
 		} else if ("c".equals(arg)) {
@@ -108,7 +108,7 @@ public class App {
 		} else {
 			System.out.println(INV_ARG);
 		}
-		
+
 	}
 
 	private static void update(String arg, Scanner input) {
@@ -126,10 +126,9 @@ public class App {
 			ProductUI.insert(input);
 		} else if ("c".equals(arg)) {
 			CategoryUI.insert(input);
-		} else if("s".equals(arg)){
+		} else if ("s".equals(arg)) {
 			InventoryUI.insert(input);
-		}
-		else {
+		} else {
 			System.out.println(INV_ARG);
 		}
 	}

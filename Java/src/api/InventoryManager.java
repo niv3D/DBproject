@@ -27,8 +27,8 @@ public class InventoryManager {
 	 */
 	public static InventoryRecord updateStock(InventoryRecord inventory) throws SQLException {
 
-		InventoryRecord result = null;
 		ResultSet resultSet = null;
+		int id = 0;
 
 		String sqlString = "INSERT INTO inventoryrecords (product_id,quantity,date,notes) VALUES (?,?,CURDATE(),?)";
 
@@ -52,9 +52,7 @@ public class InventoryManager {
 
 				resultSet = statement.getGeneratedKeys();
 				if (resultSet.next()) {
-					result = new InventoryRecord.InventoryRecordBuilder(inventory.getProductId(),
-							inventory.getQuantity()).id(resultSet.getInt(1)).date(inventory.getDate())
-							.notes(inventory.getNotes()).build();
+					id = resultSet.getInt(1);
 				}
 			}
 
@@ -76,7 +74,7 @@ public class InventoryManager {
 			}
 		}
 
-		return result;
+		return getRecord(id);
 	}
 
 	/**
@@ -109,6 +107,32 @@ public class InventoryManager {
 
 	}
 
+	public static InventoryRecord getRecord(int id) throws SQLException {
+		if(id==0) {
+			return null;
+		}
+		InventoryRecord rec = null;
+		String sqlString = "SELECT id, product_id,quantity,date,notes FROM inventoryrecords WHERE id = " + id;
+
+		try (Connection connection = DBconnector.getConnection();
+				Statement statement = connection.createStatement();
+				ResultSet r = statement.executeQuery(sqlString);
+
+		) {
+
+			if (r.next()) {
+				rec = new InventoryRecord.InventoryRecordBuilder(r.getInt("product_id"), r.getInt("quantity"))
+						.id(r.getInt("id")).date(r.getDate("date")).notes(r.getString("notes")).build();
+			}
+
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+
+		return rec;
+
+	}
+
 	/**
 	 * To get all available stock of all products in the database.
 	 * 
@@ -124,8 +148,8 @@ public class InventoryManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				stock.add(new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),
-						resultSet.getInt("TotalQuantity")).build());
+				stock.add(new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("p.id"),
+						resultSet.getInt("TotalQuantity")).notes(resultSet.getString("name")).build());
 			}
 
 		} catch (SQLException e) {

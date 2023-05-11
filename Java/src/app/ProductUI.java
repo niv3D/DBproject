@@ -145,34 +145,33 @@ public class ProductUI {
 		}
 
 	}
-	
+
 	public static void delete(Scanner input) {
 		if (!search(input)) {
 			return;
 		}
 		int idInt;
 		String id = getString("id", input);
-		if (id.contains("/")||!verifyId(id)) {
+		if (id.contains("/") || !verifyId(id)) {
 			return;
-		}
-		else {
+		} else {
 			idInt = Integer.parseInt(id);
 		}
-		
-		Product result=null;
+
+		Product result = null;
 		try {
 			result = ProductManager.delete(idInt);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
-		
+
 		if (result != null) {
 			printProduct(result);
 			System.out.println(" deleted !");
 		} else {
 			System.out.println(" error , please try again !");
 		}
-		
+
 	}
 
 	private static String getString(String label, Scanner input) {
@@ -215,18 +214,18 @@ public class ProductUI {
 	}
 
 	private static void printProduct(Product result) {
-		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+		System.out.format(" |%15s | %30s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
 				"description");
-		System.out.format(" |%15d | %15s | %15d | %15.2f | %30s |%n", result.getId(), result.getName(),
+		System.out.format(" |%15d | %30s | %15d | %15.2f | %30s |%n", result.getId(), result.getName(),
 				result.getCategoryId(), result.getPrice(), result.getDescription());
 
 	}
 
 	private static void printProduct(List<Product> results) {
-		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+		System.out.format(" |%15s | %30s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
 				"description");
 		for (Product p : results) {
-			System.out.format(" |%15d | %15s | %15d | %15.2f | %30s |%n", p.getId(), p.getName(), p.getCategoryId(),
+			System.out.format(" |%15d | %30s | %15d | %15.2f | %30s |%n", p.getId(), p.getName(), p.getCategoryId(),
 					p.getPrice(), p.getDescription());
 		}
 

@@ -13,18 +13,17 @@ public class InventoryUI {
 	}
 
 	public static void insert(Scanner input) {
-		System.out.println(" insert '/' to cancel operation");
 
 		if (!ProductUI.search(input)) {
 			return;
 		}
 
 		int idInt;
-		String ProductId = getString("id", input);
-		if (ProductId.contains("/") || !verifyId(ProductId)) {
+		String productId = getString("select-id", input);
+		if (productId.contains("/") || !verifyId(productId)) {
 			return;
 		} else {
-			idInt = Integer.parseInt(ProductId);
+			idInt = Integer.parseInt(productId);
 		}
 
 		int quantityInt;
@@ -42,15 +41,63 @@ public class InventoryUI {
 			return;
 		}
 
-		InventoryRecord record = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
+		InventoryRecord rec = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
 		InventoryRecord result = null;
 
-		if((quantityInt<0)&&(getQuantity(idInt)+quantityInt<0)) {
-			System.out.println(" low stock !");
-		}
-		
 		try {
-			result = InventoryManager.updateStock(record);
+			result = InventoryManager.updateStock(rec);
+		} catch (SQLException e) {
+			System.out.format(" %s%n", e.getMessage());
+		}
+
+		if (result != null) {
+			printRecord(result);
+			System.out.println(" added !");
+		} else {
+			System.out.println(" error , please try again !");
+		}
+
+	}
+
+	public static void delete(Scanner input) {
+
+		if (!ProductUI.search(input)) {
+			return;
+		}
+
+		int idInt;
+		String productId = getString("select-id", input);
+		if (productId.contains("/") || !verifyId(productId)) {
+			return;
+		} else {
+			idInt = Integer.parseInt(productId);
+		}
+
+		int quantityInt;
+		String quantity = getString("quantity", input);
+		if (quantity.contains("/") || !verifyId(quantity)) {
+			return;
+		} else {
+			quantityInt = -Integer.parseInt(quantity);
+		}
+
+		String notes = getString("notes", input);
+		if (notes.isEmpty()) {
+			notes = null;
+		} else if (notes.contains("/") || !verifyString(notes)) {
+			return;
+		}
+
+		InventoryRecord rec = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
+		InventoryRecord result = null;
+
+		if ((quantityInt < 0) && (getQuantity(idInt) + quantityInt < 0)) {
+			System.out.println(" low stock !");
+			return;
+		}
+
+		try {
+			result = InventoryManager.updateStock(rec);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
@@ -63,43 +110,41 @@ public class InventoryUI {
 		}
 
 	}
-	
+
 	public static void getStockStatus() {
-		
+
 		List<InventoryRecord> records = new ArrayList<>();
-		
+
 		try {
 			records = InventoryManager.productStock();
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
-		
+
 		if (!records.isEmpty()) {
 			printRecord(records);
-		}else {
+		} else {
 			System.out.println(" all stocks empty !");
 		}
-		
+
 	}
-	
-	
+
 	private static int getQuantity(int id) {
-		
+
 		InventoryRecord rec = null;
 		try {
 			rec = InventoryManager.getProductQuantity(id);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
-		
-		if (rec!=null) {
+
+		if (rec != null) {
 			printRecord(rec);
 			return rec.getQuantity();
-		}
-		else {
+		} else {
 			return 0;
 		}
-		
+
 	}
 
 	private static boolean verifyId(String s) {
@@ -131,8 +176,8 @@ public class InventoryUI {
 
 	private static void printRecord(InventoryRecord result) {
 		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
-		System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", result.getId(),
-				result.getProductId(), result.getQuantity(), result.getDate().toString(), result.getNotes());
+		System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", result.getId(), result.getProductId(),
+				result.getQuantity(), result.getDate().toString(), result.getNotes());
 
 		// id productID quantity date note
 	}
@@ -140,8 +185,8 @@ public class InventoryUI {
 	private static void printRecord(List<InventoryRecord> results) {
 		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
 		for (InventoryRecord p : results) {
-			System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", p.getId(), p.getProductId(),
-					p.getQuantity(), p.getDate().toString(), p.getNotes());
+			System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", p.getId(), p.getProductId(), p.getQuantity(),
+					p.getDate().toString(), p.getNotes());
 		}
 
 	}

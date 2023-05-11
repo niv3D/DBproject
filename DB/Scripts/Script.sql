@@ -24,7 +24,9 @@ DESCRIBE products;
 
 SELECT * FROM categories;
 
+
 SELECT * FROM products;
+
 
 SELECT id,name,category_id,price,description FROM products WHERE id = 21;
 
