@@ -57,6 +57,14 @@ public class App {
 				}
 				search(inputStrings[1],input);
 				break;
+				
+			case "delete":
+				if (inputStrings.length == 1) {
+					System.out.println(NO_ARG);
+					break;
+				}
+				delete(inputStrings[1],input);
+				break;
 
 			case "exit":
 				System.out.println("bye");
@@ -72,6 +80,17 @@ public class App {
 
 		input.close();
 
+	}
+
+	private static void delete(String arg, Scanner input) {
+		if ("p".equals(arg)) {
+			ProductUI.delete(input);
+		} else if ("c".equals(arg)) {
+			CategoryUI.delete(input);
+		} else {
+			System.out.println(INV_ARG);
+		}
+		
 	}
 
 	private static void search(String arg,Scanner input) {
