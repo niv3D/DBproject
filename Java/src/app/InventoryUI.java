@@ -105,7 +105,7 @@ public class InventoryUI {
 
 		if (result != null) {
 			printRecord(result);
-			System.out.println(" added !");
+			System.out.println(" removed !");
 		} else {
 			System.out.println(" error , please try again !");
 		}
@@ -140,7 +140,6 @@ public class InventoryUI {
 		}
 
 		if (rec != null) {
-			printRecord(rec);
 			return rec.getQuantity();
 		} else {
 			return 0;

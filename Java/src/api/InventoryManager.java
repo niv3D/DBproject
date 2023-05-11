@@ -88,15 +88,15 @@ public class InventoryManager {
 	public static InventoryRecord getProductQuantity(int productId) throws SQLException {
 		InventoryRecord result = null;
 
-		String sqlString = "SELECT SUM(quantity) AS TotalQuantity FROM inventoryrecords WHERE product_id =" + productId;
+		String sqlString = "SELECT product_id,SUM(quantity) AS totalQuantity FROM inventoryrecords WHERE product_id =" + productId;
 
 		try (Connection connection = DBconnector.getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			if (resultSet.next()) {
-				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("Product_id"),
-						resultSet.getInt("TotalQuantity")).build();
+				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("product_id"),
+						resultSet.getInt("totalQuantity")).build();
 			}
 
 		} catch (SQLException e) {
@@ -112,7 +112,7 @@ public class InventoryManager {
 			return null;
 		}
 		InventoryRecord rec = null;
-		String sqlString = "SELECT id, product_id,quantity,date,notes FROM inventoryrecords WHERE id = " + id;
+		String sqlString = "SELECT id,product_id,quantity,date,notes FROM inventoryrecords WHERE id = " + id;
 
 		try (Connection connection = DBconnector.getConnection();
 				Statement statement = connection.createStatement();
