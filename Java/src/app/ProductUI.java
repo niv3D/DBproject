@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import api.ProductManager;
 import models.Product;
+import models.Product.ProductBuilder;
 
 public class ProductUI {
 
@@ -17,99 +18,217 @@ public class ProductUI {
 
 		System.out.println(" insert '/' to cancel operation");
 
-		System.out.print(" name : ");
-		String name = input.nextLine();
-		if (name.contains("/")) {
+		String name = getString("name", input);
+		if (name.contains("/") || !verifyString(name)) {
 			return;
 		}
 
-		System.out.print(" category_id : ");
-		String categoryId = input.nextLine();
-		if (categoryId.contains("/")) {
+		float priceFloat;
+		String price = getString("price", input);
+		if (price.contains("/") || !verifyFloat(price)) {
+			return;
+		} else {
+			priceFloat = Float.parseFloat(price);
+		}
+
+		String description = getString("description", input);
+		if (description.contains("/") || !verifyString(description)) {
 			return;
 		}
 
-		System.out.print(" price : ");
-		String price = input.nextLine();
-		if (price.contains("/")) {
+		int categoryIdInt;
+		String categoryId = getString("[optional] categoryId", input);
+		if (categoryId.isEmpty()) {
+			categoryIdInt = 0;
+		} else if (categoryId.contains("/") || !verifyId(categoryId)) {
 			return;
+		} else {
+			categoryIdInt = Integer.parseInt(categoryId);
 		}
 
-		System.out.print(" description : ");
-		String description = input.nextLine();
-		if (description.contains("/")) {
-			return;
-		}
-
-		Product product = getProduct(name, categoryId, price, description);
-
-		if (product == null) {
-			System.out.println(" input format error !");
-			return;
-		}
-
-		int id = 0;
-
+		Product product = new ProductBuilder(name, priceFloat, description).categoryId(categoryIdInt).build();
+		Product result = null;
 		try {
-			id = ProductManager.insert(product);
+			result = ProductManager.insert(product);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 
-		if (id != 0) {
-			System.out.format(" product added : id - %d ;%n", id);
+		if (result != null) {
+			printProduct(result);
+			System.out.println(" added !");
 		} else {
 			System.out.println(" error , please try again !");
+		}
+
+	}
+
+	public static boolean search(Scanner input) {
+
+		System.out.println(" insert '/' to cancel operation");
+
+		String noid = getString("name", input);
+		if (noid.contains("/") || !verifyString(noid)) {
+			return false;
+		}
+
+		if (noid.matches("\\d*")) {
+			return searchInt(Integer.parseInt(noid));
+		} else {
+			return searchString(noid);
 		}
 	}
 
 	public static void update(Scanner input) {
-		// TODO document why this method is empty
-	}
 
-	public static void search(Scanner input) {
-		System.out.println(" insert '/' to cancel operation");
-		System.out.print(" name or id : ");
-		String noid = input.nextLine();
-		if (noid.contains("/")) {
+		if (!search(input)) {
 			return;
 		}
 
-		if (noid.isEmpty() || noid.matches("\\s*")) {
-			System.out.println(" input format error !");
+		int idInt;
+		String id = getString("id", input);
+		if (id.contains("/") || !verifyId(id)) {
 			return;
-		}
-
-		if (noid.matches("\\d*")) {
-			searchInt(noid);
 		} else {
-			searchString(noid);
+			idInt = Integer.parseInt(id);
+		}
+
+		String name = getString("[optional] name", input);
+		if (name.isEmpty()) {
+			name = null;
+		} else if (name.contains("/") || !verifyString(name)) {
+			return;
+		}
+
+		int categoryIdInt;
+		String categoryId = getString("[optional] category_id", input);
+		if (categoryId.isEmpty()) {
+			categoryIdInt = 0;
+		} else if (categoryId.contains("/") || !verifyId(categoryId)) {
+			return;
+		} else {
+			categoryIdInt = Integer.parseInt(categoryId);
+		}
+
+		float priceFloat;
+
+		String price = getString("[optional] price", input);
+		if (price.isEmpty()) {
+			priceFloat = 0;
+		} else if (price.contains("/") || !verifyFloat(price)) {
+			return;
+		} else {
+			priceFloat = Float.parseFloat(price);
+		}
+
+		String description = getString("[optional] description", input);
+		if (description.isEmpty()) {
+			description = null;
+		} else if (description.contains("/") || !verifyString(description)) {
+			return;
+		}
+
+		Product product = new ProductBuilder(name, priceFloat, description).categoryId(categoryIdInt).id(idInt).build();
+		Product result = null;
+
+		try {
+			result = ProductManager.update(product);
+		} catch (SQLException e) {
+			System.out.format(" %s%n", e.getLocalizedMessage());
+		}
+
+		if (result != null) {
+			printProduct(result);
+			System.out.println(" updated !");
+		} else {
+			System.out.println(" error , please try again !");
+		}
+
+	}
+	
+	public static void delete(Scanner input) {
+		if (!search(input)) {
+			return;
+		}
+	}
+
+	private static String getString(String label, Scanner input) {
+		System.out.format(" %s : ", label);
+		return input.nextLine();
+	}
+
+	private static boolean verifyString(String s) {
+
+		if (s.isEmpty() || s.matches("\\s*")) {
+			System.out.println(" field cant be empty !");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private static boolean verifyId(String s) {
+		if (s.isEmpty() || s.matches("\\s*")) {
+			System.out.println(" field cant be empty !");
+			return false;
+		} else if (!s.matches("\\d*")) {
+			System.out.println(" field must be a number !");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private static boolean verifyFloat(String s) {
+		if (s.isEmpty() || s.matches("\\s*")) {
+			System.out.println(" field cant be empty !");
+			return false;
+		} else if (!s.matches("\\d*\\.?\\d*")) {
+			System.out.println(" field must be a number !");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private static void printProduct(Product result) {
+		System.out.format(" %15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+				"description");
+		System.out.format(" %15d | %15s | %15d | %15.2f | %30s |%n", result.getId(), result.getName(),
+				result.getCategoryId(), result.getPrice(), result.getDescription());
+
+	}
+
+	private static void printProduct(List<Product> results) {
+		System.out.format(" %15s | %15s | %15s | %15s | %30s |%n%n", "id", "name", "category_id", "price",
+				"description");
+		for (Product p : results) {
+			System.out.format(" %15d | %15s | %15d | %15.2f | %30s |%n", p.getId(), p.getName(), p.getCategoryId(),
+					p.getPrice(), p.getDescription());
 		}
 
 	}
 
-	private static void searchString(String noid) {
+	private static boolean searchString(String name) {
 		List<Product> products = new ArrayList<>();
 		try {
-			products = ProductManager.search(noid);
+			products = ProductManager.search(name);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 
 		if (!products.isEmpty()) {
-			for (Product p : products) {
-				System.out.format(" %4d | %-15s | %4d | %4f | %30s |%n", p.id, p.name, p.categoryId, p.price,
-						p.description);
-			}
+			printProduct(products);
+			return true;
 		} else {
 			System.out.println(" not found !");
+			return false;
 		}
 	}
 
-	private static void searchInt(String noid) {
-		int id = Integer.parseInt(noid);
-		Product p = null;
+	private static boolean searchInt(int id) {
 
+		Product p = null;
 		try {
 			p = ProductManager.search(id);
 		} catch (SQLException e) {
@@ -117,43 +236,12 @@ public class ProductUI {
 		}
 
 		if (p != null) {
-			System.out.format(" %4d | %-15s | %4d | %8.2f | %30s |%n", p.id, p.name, p.categoryId, p.price,
-					p.description);
+			printProduct(p);
+			return true;
 		} else {
 			System.out.println(" not found !");
+			return false;
 		}
-	}
-
-	private static Product getProduct(String name, String categoryId, String price, String description) {
-
-		if (name.isEmpty() || name.matches("\\s*")) {
-			return null;
-		}
-
-		Integer cid;
-		if (categoryId.matches("\\d*")) {
-			cid = Integer.parseInt(categoryId);
-		} else if (categoryId.isEmpty()) {
-			cid = null;
-		} else {
-			return null;
-		}
-
-		Float p;
-		if (price.isEmpty()) {
-			p = null;
-		} else if (price.matches("\\d*\\.?\\d*")) {
-			p = Float.parseFloat(price);
-		} else {
-			return null;
-		}
-
-		if (description.isEmpty()) {
-			description = null;
-		}
-
-		return new Product(name, cid, p, description);
-
 	}
 
 }

@@ -23,13 +23,13 @@ public class ProductManager {
 	 * 
 	 * @param product an object of <code>models.Product</code> which contains
 	 *                product data without id
-	 * @return generated product id or 0 if unsuccessful
-	 * @throws SQLException 
+	 * @return generated product
+	 * @throws SQLException
 	 */
-	public static int insert(Product product) throws SQLException {
+	public static Product insert(Product product) throws SQLException {
 
-		int id = 0;
 		ResultSet resultSet = null;
+		Product result = null;
 
 		String sqlString = "INSERT INTO products (name,category_id,price,description) VALUES (?,?,?,?)";
 
@@ -37,33 +37,26 @@ public class ProductManager {
 				PreparedStatement statement = connection.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
 		) {
+			int i = 0;
+			statement.setString(++i, product.getName());
 
-			statement.setString(1, product.name);
-
-			if (product.categoryId == null) {
-				statement.setNull(2, Types.INTEGER);
+			if (product.getCategoryId() == 0) {
+				statement.setNull(++i, Types.INTEGER);
 			} else {
-				statement.setInt(2, product.categoryId);
+				statement.setInt(++i, product.getCategoryId());
 			}
 
-			if (product.price == null) {
-				statement.setNull(3, Types.FLOAT);
-			} else {
-				statement.setFloat(3, product.price);
-			}
+			statement.setFloat(++i, product.getPrice());
+			statement.setString(++i, product.getDescription());
 
-			if (product.description == null) {
-				statement.setNull(4, Types.VARCHAR);
-			} else {
-				statement.setString(4, product.description);
-			}
 			int rowAffected = statement.executeUpdate();
 
 			if (rowAffected == 1) {
-
 				resultSet = statement.getGeneratedKeys();
 				if (resultSet.next()) {
-					id = resultSet.getInt(1);
+
+					result = new Product.ProductBuilder(product.getName(), product.getPrice(), product.getDescription())
+							.categoryId(product.getCategoryId()).id(resultSet.getInt(1)).build();
 				}
 			}
 
@@ -85,7 +78,7 @@ public class ProductManager {
 			}
 		}
 
-		return id;
+		return result;
 	}
 
 	/**
@@ -95,23 +88,23 @@ public class ProductManager {
 	 *                updating product and fields set to the updated values, fields
 	 *                set to null wont be updated
 	 * @return rowAffected, either 1 if update was successful or 0
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public static int update(Product product) throws SQLException {
+	public static Product update(Product product) throws SQLException {
 
 		int rowAffected = 0;
 		String sqlString = "UPDATE products SET ";
 
-		if (product.name != null) {
+		if (product.getName() != null) {
 			sqlString += "name = ?, ";
 		}
-		if (product.categoryId != null) {
+		if (product.getCategoryId() != 0) {
 			sqlString += "category_id = ?, ";
 		}
-		if (product.price != null) {
+		if (product.getPrice() != 0) {
 			sqlString += "price = ?, ";
 		}
-		if (product.description != null) {
+		if (product.getDescription() != null) {
 			sqlString += "description = ? ";
 		}
 
@@ -122,25 +115,25 @@ public class ProductManager {
 
 			int i = 0;
 
-			if (product.name != null) {
-				statement.setString(++i, product.name);
+			if (product.getName() != null) {
+				statement.setString(++i, product.getName());
 			}
-			if (product.categoryId != null) {
-				statement.setInt(++i, product.categoryId);
+			if (product.getCategoryId() != 0) {
+				statement.setInt(++i, product.getCategoryId());
 			}
-			if (product.price != null) {
-				statement.setFloat(++i, product.price);
+			if (product.getPrice() != 0) {
+				statement.setFloat(++i, product.getPrice());
 			}
-			if (product.description != null) {
-				statement.setString(++i, product.description);
+			if (product.getDescription() != null) {
+				statement.setString(++i, product.getDescription());
 			}
 
 			// if all field are null return 0
 			if (i == 0) {
-				return 0;
+				return null;
 			}
 
-			statement.setInt(++i, product.id);
+			statement.setInt(++i, product.getId());
 
 			rowAffected = statement.executeUpdate();
 
@@ -152,7 +145,11 @@ public class ProductManager {
 			throw e;
 		}
 
-		return rowAffected;
+		if (rowAffected == 1) {
+			return search(product.getId());
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -161,10 +158,11 @@ public class ProductManager {
 	 * @param id product id
 	 * @return rowAffected, either 1 if deletion was successful or 0
 	 */
-	public static int delete(int id) {
+	public static Product delete(int id) throws SQLException {
 
 		String sqlString = "DELETE FROM products WHERE id = ?";
 		int rowAffected = 0;
+		Product product = search(id);
 
 		try (Connection connection = DBconnector.getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString)) {
@@ -173,11 +171,14 @@ public class ProductManager {
 			rowAffected = statement.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new SQLException(e.getMessage());
 		}
 
-		return rowAffected;
-
+		if (rowAffected == 1) {
+			return product;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -185,13 +186,9 @@ public class ProductManager {
 	 * 
 	 * @param id product id
 	 * @return a <code>models.Product<code> object or null if no product is found
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public static Product search(int id) throws SQLException {
-
-		if (id == 0) {
-			return null;
-		}
 
 		Product product = null;
 		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE id = " + id;
@@ -203,8 +200,9 @@ public class ProductManager {
 		) {
 
 			if (resultSet.next()) {
-				product = new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getFloat(4), resultSet.getString(5));
+				product = new Product.ProductBuilder(resultSet.getString("name"), resultSet.getFloat("price"),
+						resultSet.getString("description")).categoryId(resultSet.getInt("category_id"))
+						.id(resultSet.getInt("id")).build();
 			}
 
 		} catch (SQLException e) {
@@ -219,15 +217,11 @@ public class ProductManager {
 	 * 
 	 * @param name product name
 	 * @return a <code>List</code> of <code>models.Product</code>
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	public static List<Product> search(String name) throws SQLException {
 
 		List<Product> products = new ArrayList<>();
-
-		if (" ".equals(name)) {
-			return products;
-		}
 
 		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE name LIKE '%" + name
 				+ "%'";
@@ -237,8 +231,9 @@ public class ProductManager {
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
 			while (resultSet.next()) {
-				products.add(new Product(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getFloat(4), resultSet.getString(5)));
+				products.add(new Product.ProductBuilder(resultSet.getString("name"), resultSet.getFloat("price"),
+						resultSet.getString("description")).categoryId(resultSet.getInt("category_id"))
+						.id(resultSet.getInt("id")).build());
 			}
 
 		} catch (SQLException e) {

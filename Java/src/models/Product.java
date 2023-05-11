@@ -2,26 +2,67 @@ package models;
 
 public class Product {
 
-	public Product(int id, String name, Integer categoryId, Float price, String description) {
-		this.id = id;
-		this.name = name;
-		this.categoryId = categoryId;
-		this.price = price;
-		this.description = description;
+	private final int id;
+	private final String name;
+	private final int categoryId;
+	private final float price;
+	private final String description;
+
+	private Product(ProductBuilder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.categoryId = builder.categoryId;
+		this.price = builder.price;
+		this.description = builder.description;
 	}
 
-	public Product(String name, Integer categoryId, Float price, String description) {
-		this.id = null;
-		this.name = name;
-		this.categoryId = categoryId;
-		this.price = price;
-		this.description = description;
+	public int getId() {
+		return id;
 	}
 
-	public final Integer id;
-	public final String name;
-	public final Integer categoryId;
-	public final Float price;
-	public final String description;
+	public String getName() {
+		return name;
+	}
+
+	public int getCategoryId() {
+		return categoryId;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public static class ProductBuilder {
+
+		private int id;
+		private final String name;
+		private int categoryId;
+		private final float price;
+		private final String description;
+
+		public ProductBuilder(String name, float price, String description) {
+			this.name = name;
+			this.price = price;
+			this.description = description;
+		}
+
+		public ProductBuilder id(int id) {
+			this.id = id;
+			return this;
+		}
+
+		public ProductBuilder categoryId(int categoryId) {
+			this.categoryId = categoryId;
+			return this;
+		}
+
+		public Product build() {
+			return new Product(this);
+		}
+	}
 
 }
