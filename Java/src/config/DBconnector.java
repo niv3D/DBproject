@@ -6,14 +6,19 @@ import java.sql.SQLException;
 
 public class DBconnector {
 
+	private static DBconnector dBconnector;
+
 	private DBconnector() {
 	}
 
-	private static String url = "jdbc:mysql://localhost:3306/InventoryDB";
-	private static String user = "root";
-	private static String password = "";
+	public static DBconnector getInstance() {
+		if (dBconnector == null) {
+			dBconnector = new DBconnector();
+		}
+		return dBconnector;
+	}
 
 	public static Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(url, user, password);
+		return DriverManager.getConnection("jdbc:mysql://localhost:3306/InventoryDB", "root", "");
 	}
 }
