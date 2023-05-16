@@ -182,7 +182,7 @@ public class ProductUI {
 	private static boolean verifyString(String s) {
 
 		if (s.isEmpty() || s.matches("\\s*")) {
-			System.out.println(" field cant be empty !");
+			System.out.println(" Enter a value !");
 			return false;
 		} else {
 			return true;
@@ -191,10 +191,10 @@ public class ProductUI {
 
 	private static boolean verifyId(String s) {
 		if (s.isEmpty() || s.matches("\\s*")) {
-			System.out.println(" field cant be empty !");
+			System.out.println(" Enter a value !");
 			return false;
 		} else if (!s.matches("\\d*")) {
-			System.out.println(" field must be a number !");
+			System.out.println(" Enter a number !");
 			return false;
 		} else {
 			return true;
@@ -203,10 +203,10 @@ public class ProductUI {
 
 	private static boolean verifyFloat(String s) {
 		if (s.isEmpty() || s.matches("\\s*")) {
-			System.out.println(" field cant be empty !");
+			System.out.println("Enter a value !");
 			return false;
 		} else if (!s.matches("\\d*\\.?\\d*")) {
-			System.out.println(" field must be a number !");
+			System.out.println(" Enter a number !");
 			return false;
 		} else {
 			return true;
@@ -243,7 +243,7 @@ public class ProductUI {
 			printProduct(products);
 			return true;
 		} else {
-			System.out.println(" not found !");
+			System.out.println("Product not found !");
 			return false;
 		}
 	}
@@ -261,7 +261,7 @@ public class ProductUI {
 			printProduct(p);
 			return true;
 		} else {
-			System.out.println(" not found !");
+			System.out.println(" Product Id not found !");
 			return false;
 		}
 	}
