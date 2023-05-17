@@ -63,6 +63,10 @@ public class ProductManager {
 		} catch (SQLException e) {
 
 			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
+				
+				System.out.println(e.getMessage());
+				System.out.println();
+				
 				if (e.getMessage().contains("FOREIGN KEY (`category_id`)")) {
 					throw new SQLException("category_id not found");
 				}
