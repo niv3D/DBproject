@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import api.InventoryManager;
 import models.InventoryRecord;
+import models.Product;
 
 public class InventoryUI {
 	private InventoryUI() {
@@ -42,7 +43,7 @@ public class InventoryUI {
 		}
 
 		InventoryRecord rec = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
-		InventoryRecord result = null;
+		Product result = null;
 
 		try {
 			result = InventoryManager.updateStock(rec);
@@ -51,8 +52,8 @@ public class InventoryUI {
 		}
 
 		if (result != null) {
-			printRecord(result);
 			System.out.println(" added !");
+			printStatus(result);
 		} else {
 			System.out.println(" error , please try again !");
 		}
@@ -89,7 +90,7 @@ public class InventoryUI {
 		}
 
 		InventoryRecord rec = new InventoryRecord.InventoryRecordBuilder(idInt, quantityInt).notes(notes).build();
-		InventoryRecord result = null;
+		Product result = null;
 
 		if ((quantityInt < 0) && (getQuantity(idInt) + quantityInt < 0)) {
 			System.out.println(" low stock !");
@@ -104,8 +105,8 @@ public class InventoryUI {
 		}
 
 		if (result != null) {
-			printRecord(result);
 			System.out.println(" removed !");
+			printStatus(result);
 		} else {
 			System.out.println(" error , please try again !");
 		}
@@ -114,7 +115,7 @@ public class InventoryUI {
 
 	public static void getStockStatus() {
 
-		List<InventoryRecord> records = new ArrayList<>();
+		List<Product> records = new ArrayList<>();
 
 		try {
 			records = InventoryManager.productStock();
@@ -123,7 +124,7 @@ public class InventoryUI {
 		}
 
 		if (!records.isEmpty()) {
-			printRecord(records);
+			printStatus(records);
 		} else {
 			System.out.println(" all stocks empty !");
 		}
@@ -132,15 +133,15 @@ public class InventoryUI {
 
 	private static int getQuantity(int id) {
 
-		InventoryRecord rec = null;
+		Product rec = null;
 		try {
-			rec = InventoryManager.getProductQuantity(id);
+			rec = InventoryManager.productStock(id);
 		} catch (SQLException e) {
 			System.out.format(" %s%n", e.getLocalizedMessage());
 		}
 
 		if (rec != null) {
-			return rec.getQuantity();
+			return rec.getQuantityInStock();
 		} else {
 			return 0;
 		}
@@ -174,19 +175,19 @@ public class InventoryUI {
 		}
 	}
 
-	private static void printRecord(InventoryRecord result) {
-		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
-		System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", result.getId(), result.getProductId(),
-				result.getQuantity(), result.getDate(), result.getNotes());
+	private static void printStatus(Product result) {
+		System.out.format(" |%15s | %30s | %15s | %15s | | %15s |  %30s |%n%n", "id", "name", "category_id", "price",
+				"total_quantity", "description");
+		System.out.format(" |%15d | %30s | %15d | %15.2f | | %15d |  %30s |%n", result.getId(), result.getName(),
+				result.getCategoryId(), result.getPrice(), result.getQuantityInStock(), result.getDescription());
 
 		// id productID quantity date note
 	}
 
-	private static void printRecord(List<InventoryRecord> results) {
-		System.out.format(" |%15s | %15s | %15s | %15s | %30s |%n%n", "id", "product_id", "quantity", "date", "note");
-		for (InventoryRecord p : results) {
-			System.out.format(" |%15d | %15d | %15d | %15s | %30s |%n", p.getId(), p.getProductId(), p.getQuantity(),
-					p.getDate(), p.getNotes());
+	private static void printStatus(List<Product> results) {
+		System.out.format(" |%15s | %30s | %15s |%n%n", "id", "name", "total_quantity");
+		for (Product p : results) {
+			System.out.format(" |%15d | %30s | %15d |%n", p.getId(), p.getName(), p.getQuantityInStock());
 		}
 
 	}

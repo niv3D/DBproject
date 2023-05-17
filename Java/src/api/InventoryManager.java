@@ -53,15 +53,16 @@ public class InventoryManager {
 			} else {
 				statement.setString(3, inventory.getNotes());
 			}
-			int rowAffected = statement.executeUpdate();
+			
+			statement.executeUpdate();
+			Product p = productStock(inventory.getProductId());
 
-			if (rowAffected == 1) {
+			if ( p != null) {
 
-				int quantityInStock = productStock(inventory.getProductId()).getQuantityInStock()
-						+ inventory.getQuantity();
+				int quantityInStock = p.getQuantityInStock() + inventory.getQuantity();
 
 				stmt.setInt(1, quantityInStock);
-				stmt.setInt(2, inventory.getProductId());
+				stmt.setInt(2, p.getId());
 
 				stmt.executeUpdate();
 
@@ -112,29 +113,6 @@ public class InventoryManager {
 	 * @throws SQLException
 	 */
 
-	public static InventoryRecord getProductQuantity(int productId) throws SQLException {
-		InventoryRecord result = null;
-
-		String sqlString = "SELECT product_id,SUM(quantity) AS totalQuantity FROM inventoryrecords WHERE product_id ="
-				+ productId;
-
-		try (Connection connection = DBconnector.getInstance().getConnection();
-				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery(sqlString);) {
-
-			if (resultSet.next()) {
-				result = new InventoryRecord.InventoryRecordBuilder(resultSet.getInt("product_id"),
-						resultSet.getInt("totalQuantity")).build();
-			}
-
-		} catch (SQLException e) {
-			throw new SQLException(e.getMessage());
-		}
-
-		return result;
-
-	}
-
 	public static InventoryRecord getRecord(int id) throws SQLException {
 		if (id == 0) {
 			return null;
@@ -168,9 +146,9 @@ public class InventoryManager {
 	 * @throws SQLException
 	 */
 
-	private static Product productStock(int id) throws SQLException {
+	public static Product productStock(int id) throws SQLException {
 		Product product = null;
-		String sqlString = "SELECT id, name, price, description quantity_in_stock FROM products WHERE id = " + id;
+		String sqlString = "SELECT id, name, category_id, price, description quantity_in_stock FROM products WHERE id = " + id;
 
 		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
@@ -179,7 +157,7 @@ public class InventoryManager {
 			if (resultSet.next()) {
 				product = new Product.ProductBuilder(resultSet.getString("name"), resultSet.getInt("price"),
 						resultSet.getString("description")).id(resultSet.getInt("id"))
-						.quantityInStock(resultSet.getInt("quantity_in_stock")).build();
+						.quantityInStock(resultSet.getInt("quantity_in_stock")).categoryId(resultSet.getInt("category_id")).build();
 			}
 
 		} catch (SQLException e) {
