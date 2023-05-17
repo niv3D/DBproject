@@ -24,6 +24,7 @@ DESCRIBE products;
 
 SELECT * FROM categories;
 
+ALTER TABLE products ADD quantity_in_stock INT DEFAULT 0;
 
 SELECT * FROM products;
 
