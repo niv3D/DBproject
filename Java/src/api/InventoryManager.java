@@ -53,11 +53,11 @@ public class InventoryManager {
 			} else {
 				statement.setString(3, inventory.getNotes());
 			}
-			
+
 			statement.executeUpdate();
 			Product p = productStock(inventory.getProductId());
 
-			if ( p != null) {
+			if (p != null) {
 
 				int quantityInStock = p.getQuantityInStock() + inventory.getQuantity();
 
@@ -148,7 +148,8 @@ public class InventoryManager {
 
 	public static Product productStock(int id) throws SQLException {
 		Product product = null;
-		String sqlString = "SELECT id, name, category_id, price, description quantity_in_stock FROM products WHERE id = " + id;
+		String sqlString = "SELECT id, name, category_id, price, description quantity_in_stock FROM products WHERE id = "
+				+ id;
 
 		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
@@ -157,7 +158,8 @@ public class InventoryManager {
 			if (resultSet.next()) {
 				product = new Product.ProductBuilder(resultSet.getString("name"), resultSet.getInt("price"),
 						resultSet.getString("description")).id(resultSet.getInt("id"))
-						.quantityInStock(resultSet.getInt("quantity_in_stock")).categoryId(resultSet.getInt("category_id")).build();
+						.quantityInStock(resultSet.getInt("quantity_in_stock"))
+						.categoryId(resultSet.getInt("category_id")).build();
 			}
 
 		} catch (SQLException e) {
