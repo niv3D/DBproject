@@ -172,7 +172,7 @@ public class InventoryManager {
 
 	public static List<Product> productStock() throws SQLException {
 		List<Product> stock = new ArrayList<>();
-		String sqlString = "SELECT id, name, price, description quantity_in_stock FROM products";
+		String sqlString = "SELECT id, name, price, description, quantity_in_stock FROM products";
 		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);) {

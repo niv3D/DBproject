@@ -32,7 +32,7 @@ public class CategoryManager {
 
 		String sqlString = "INSERT INTO categories (name) VALUES (?)";
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
 		) {
@@ -83,7 +83,7 @@ public class CategoryManager {
 
 		String sqlString = "UPDATE categories SET name = ? WHERE id = ?";
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
 			statement.setString(1, category.getName());
 			statement.setInt(2, category.getId());
@@ -123,7 +123,7 @@ public class CategoryManager {
 		String sqlString = "DELETE FROM Categories WHERE id= ?";
 		Category category = search(id);
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
 
 			statement.setInt(1, id);
@@ -154,7 +154,7 @@ public class CategoryManager {
 
 		String sqlString = "SELECT id,name FROM categories WHERE id=" + id;
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 
@@ -185,7 +185,7 @@ public class CategoryManager {
 
 		String sqlString = "SELECT id,name FROM categories WHERE name LIKE '%" + name + "%'";
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 

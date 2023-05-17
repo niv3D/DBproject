@@ -63,8 +63,12 @@ public class ProductManager {
 		} catch (SQLException e) {
 
 			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
-				throw new SQLIntegrityConstraintViolationException(
-						"Product name already exists or category id not found");
+				if (e.getMessage().contains("FOREIGN KEY (`category_id`)")) {
+					throw new SQLException("category_id not found");
+				}
+				else {
+					throw new SQLException("product name already exists");
+				}
 			}
 
 			throw e;
@@ -147,8 +151,12 @@ public class ProductManager {
 
 		} catch (SQLException e) {
 			if (e.getClass() == SQLIntegrityConstraintViolationException.class) {
-				throw new SQLIntegrityConstraintViolationException(
-						"Product name already exists or category id not found");
+				if (e.getMessage().contains("FOREIGN KEY (`category_id`)")) {
+					throw new SQLException("category_id not found");
+				}
+				else {
+					throw new SQLException("product name already exists");
+				}
 			}
 
 			throw e;
