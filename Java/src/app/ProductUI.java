@@ -194,7 +194,7 @@ public class ProductUI {
 			System.out.println(" Enter a value !");
 			return false;
 		} else if (!s.matches("\\d*")) {
-			System.out.println(" Enter a number !");
+			System.out.println(" Enter a positive number !");
 			return false;
 		} else {
 			return true;
@@ -206,7 +206,7 @@ public class ProductUI {
 			System.out.println("Enter a value !");
 			return false;
 		} else if (!s.matches("\\d*\\.?\\d*")) {
-			System.out.println(" Enter a number !");
+			System.out.println(" Enter a positive float !");
 			return false;
 		} else {
 			return true;

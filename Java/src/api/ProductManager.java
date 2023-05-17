@@ -33,7 +33,7 @@ public class ProductManager {
 
 		String sqlString = "INSERT INTO products (name,category_id,price,description) VALUES (?,?,?,?)";
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString, Statement.RETURN_GENERATED_KEYS);
 
 		) {
@@ -118,7 +118,7 @@ public class ProductManager {
 
 		System.out.println(sqlString);
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString);) {
 
 			int i = 0;
@@ -174,7 +174,7 @@ public class ProductManager {
 		int rowAffected = 0;
 		Product product = search(id);
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				PreparedStatement statement = connection.prepareStatement(sqlString)) {
 
 			statement.setInt(1, id);
@@ -203,7 +203,7 @@ public class ProductManager {
 		Product product = null;
 		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE id = " + id;
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);
 
@@ -236,7 +236,7 @@ public class ProductManager {
 		String sqlString = "SELECT id,name,category_id,price,description FROM products WHERE name LIKE '%" + name
 				+ "%'";
 
-		try (Connection connection = DBconnector.getConnection();
+		try (Connection connection = DBconnector.getInstance().getConnection();
 				Statement statement = connection.createStatement();
 				ResultSet resultSet = statement.executeQuery(sqlString);) {
 

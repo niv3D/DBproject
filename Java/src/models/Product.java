@@ -7,6 +7,7 @@ public class Product {
 	private final int categoryId;
 	private final float price;
 	private final String description;
+	private final int quantityInStock;
 
 	private Product(ProductBuilder builder) {
 		this.id = builder.id;
@@ -14,6 +15,7 @@ public class Product {
 		this.categoryId = builder.categoryId;
 		this.price = builder.price;
 		this.description = builder.description;
+		this.quantityInStock = builder.quantityInStock;
 	}
 
 	public int getId() {
@@ -36,6 +38,10 @@ public class Product {
 		return description;
 	}
 
+	public int getQuantityInStock() {
+		return quantityInStock;
+	}
+
 	public static class ProductBuilder {
 
 		private int id;
@@ -43,6 +49,7 @@ public class Product {
 		private int categoryId;
 		private final float price;
 		private final String description;
+		private int quantityInStock;
 
 		public ProductBuilder(String name, float price, String description) {
 			this.name = name;
@@ -60,9 +67,15 @@ public class Product {
 			return this;
 		}
 
+		public ProductBuilder quantityInStock(int quantityInStock) {
+			this.quantityInStock = quantityInStock;
+			return this;
+		}
+
 		public Product build() {
 			return new Product(this);
 		}
+
 	}
 
 }

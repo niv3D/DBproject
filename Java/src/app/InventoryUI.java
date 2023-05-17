@@ -152,7 +152,7 @@ public class InventoryUI {
 			System.out.println(" Enter a value !");
 			return false;
 		} else if (!s.matches("\\d*")) {
-			System.out.println(" Enter a number !");
+			System.out.println(" Enter a positive number !");
 			return false;
 		} else {
 			return true;
